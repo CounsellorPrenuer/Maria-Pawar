@@ -27,15 +27,15 @@ export default function PricingTabs({ categories, onBuyClick }: PricingTabsProps
 
   return (
     <div className="w-full">
-      <div className="flex flex-wrap justify-center gap-4 mb-12">
+      <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-16">
         {categories.map((category) => (
           <button
             key={category.id}
             onClick={() => setActiveTab(category.id)}
-            className={`px-6 py-3 rounded-full font-semibold transition-all ${
+            className={`px-4 sm:px-6 py-2 sm:py-3 rounded-full font-semibold transition-all text-sm sm:text-base ${
               activeTab === category.id
-                ? "bg-accent text-accent-foreground border-2 border-accent"
-                : "bg-card text-muted-foreground border-2 border-border hover:border-accent/50"
+                ? "bg-gradient-to-r from-accent to-secondary text-white shadow-lg scale-105"
+                : "bg-card/50 text-muted-foreground backdrop-blur-sm hover:bg-card hover:scale-105 hover:shadow-md"
             }`}
             data-testid={`button-tab-${category.id}`}
           >
@@ -45,7 +45,7 @@ export default function PricingTabs({ categories, onBuyClick }: PricingTabsProps
       </div>
 
       {activeCategory && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto items-start">
           <PricingCard
             {...activeCategory.standard}
             onBuyClick={() =>
