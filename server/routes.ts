@@ -1,9 +1,52 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
+import passport from "passport";
 import { storage } from "./storage";
 import { insertBookingSchema, insertContactSchema } from "@shared/schema";
 
+function requireAuth(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ error: "Unauthorized" });
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth routes
+  app.post("/api/auth/login", (req, res, next) => {
+    passport.authenticate("local", (err: any, user: any, info: any) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      if (!user) {
+        return res.status(401).json({ error: info?.message || "Invalid credentials" });
+      }
+      req.login(user, (err) => {
+        if (err) {
+          return res.status(500).json({ error: err.message });
+        }
+        return res.json({ success: true, user: { username: user.username } });
+      });
+    })(req, res, next);
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.logout((err) => {
+      if (err) {
+        return res.status(500).json({ error: err.message });
+      }
+      res.json({ success: true });
+    });
+  });
+
+  app.get("/api/auth/check", (req, res) => {
+    if (req.isAuthenticated()) {
+      res.json({ authenticated: true, user: req.user });
+    } else {
+      res.json({ authenticated: false });
+    }
+  });
+
   // Bookings API
   app.post("/api/bookings", async (req, res) => {
     try {
@@ -66,8 +109,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin Dashboard Stats
-  app.get("/api/admin/stats", async (req, res) => {
+  // Admin Dashboard Stats (protected)
+  app.get("/api/admin/stats", requireAuth, async (req, res) => {
     try {
       const [bookings, contacts] = await Promise.all([
         storage.getAllBookings(),

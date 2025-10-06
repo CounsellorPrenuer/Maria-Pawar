@@ -1,10 +1,59 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-secret-key-change-in-production",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+    },
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(
+  new LocalStrategy((username, password, done) => {
+    const adminUsername = process.env.ADMIN_USERNAME;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+
+    if (!adminUsername || !adminPassword) {
+      return done(new Error("Admin credentials not configured"));
+    }
+
+    if (username === adminUsername && password === adminPassword) {
+      return done(null, { id: "admin", username: adminUsername });
+    }
+
+    return done(null, false, { message: "Invalid credentials" });
+  })
+);
+
+passport.serializeUser((user: any, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser((id: string, done) => {
+  const adminUsername = process.env.ADMIN_USERNAME;
+  if (id === "admin" && adminUsername) {
+    done(null, { id: "admin", username: adminUsername });
+  } else {
+    done(null, false);
+  }
+});
 
 app.use((req, res, next) => {
   const start = Date.now();
