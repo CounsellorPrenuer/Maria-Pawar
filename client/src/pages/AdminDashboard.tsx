@@ -116,6 +116,9 @@ export default function AdminDashboard() {
             <TabsTrigger value="overview" data-testid="tab-overview">
               Overview
             </TabsTrigger>
+            <TabsTrigger value="leads" data-testid="tab-leads">
+              All Leads ({stats?.totalLeads || 0})
+            </TabsTrigger>
             <TabsTrigger value="bookings" data-testid="tab-bookings">
               Bookings ({stats?.totalBookings || 0})
             </TabsTrigger>
@@ -246,6 +249,81 @@ export default function AdminDashboard() {
                 )}
               </Card>
             </div>
+          </TabsContent>
+
+          <TabsContent value="leads">
+            <Card className="p-6 backdrop-blur-sm bg-card/50">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">All Leads (Bookings + Contact Forms)</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => exportToCSV([...bookings, ...contacts], "all-leads")}
+                  disabled={bookings.length === 0 && contacts.length === 0}
+                  data-testid="button-export-leads"
+                >
+                  <FileDown className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+              {bookings.length === 0 && contacts.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  No leads to display
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="border-b">
+                      <tr>
+                        <th className="text-left py-2">Type</th>
+                        <th className="text-left py-2">Name</th>
+                        <th className="text-left py-2">Email</th>
+                        <th className="text-left py-2">Phone</th>
+                        <th className="text-left py-2">Details</th>
+                        <th className="text-left py-2">Status/Message</th>
+                        <th className="text-left py-2">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        ...bookings.map(b => ({ ...b, type: 'booking' as const })),
+                        ...contacts.map(c => ({ ...c, type: 'contact' as const }))
+                      ]
+                        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                        .map((lead) => (
+                          <tr key={lead.id} className="border-b hover:bg-muted/50">
+                            <td className="py-3">
+                              <Badge variant={lead.type === 'booking' ? "default" : "secondary"}>
+                                {lead.type === 'booking' ? 'Booking' : 'Contact'}
+                              </Badge>
+                            </td>
+                            <td className="py-3">{lead.name}</td>
+                            <td className="py-3 text-sm text-muted-foreground">{lead.email}</td>
+                            <td className="py-3 text-sm text-muted-foreground">{lead.phone}</td>
+                            <td className="py-3 text-sm text-muted-foreground">
+                              {lead.type === 'booking' 
+                                ? `${(lead as any).serviceName} - ${(lead as any).category} - ₹${(lead as any).price.toLocaleString()}`
+                                : '-'
+                              }
+                            </td>
+                            <td className="py-3 text-sm text-muted-foreground max-w-xs truncate">
+                              {lead.type === 'booking'
+                                ? <Badge variant={(lead as any).paymentStatus === "paid" ? "default" : "outline"}>
+                                    {(lead as any).paymentStatus}
+                                  </Badge>
+                                : (lead as any).message
+                              }
+                            </td>
+                            <td className="py-3 text-sm text-muted-foreground">
+                              {format(new Date(lead.createdAt), "MMM dd, yyyy HH:mm")}
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
           </TabsContent>
 
           <TabsContent value="bookings">
