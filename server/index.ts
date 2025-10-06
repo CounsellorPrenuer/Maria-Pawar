@@ -9,9 +9,17 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+if (!process.env.SESSION_SECRET) {
+  throw new Error("SESSION_SECRET environment variable is required");
+}
+
+if (!process.env.ADMIN_USERNAME || !process.env.ADMIN_PASSWORD) {
+  throw new Error("ADMIN_USERNAME and ADMIN_PASSWORD environment variables are required");
+}
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "your-secret-key-change-in-production",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -27,12 +35,8 @@ app.use(passport.session());
 
 passport.use(
   new LocalStrategy((username, password, done) => {
-    const adminUsername = process.env.ADMIN_USERNAME;
-    const adminPassword = process.env.ADMIN_PASSWORD;
-
-    if (!adminUsername || !adminPassword) {
-      return done(new Error("Admin credentials not configured"));
-    }
+    const adminUsername = process.env.ADMIN_USERNAME!;
+    const adminPassword = process.env.ADMIN_PASSWORD!;
 
     if (username === adminUsername && password === adminPassword) {
       return done(null, { id: "admin", username: adminUsername });
@@ -47,8 +51,8 @@ passport.serializeUser((user: any, done) => {
 });
 
 passport.deserializeUser((id: string, done) => {
-  const adminUsername = process.env.ADMIN_USERNAME;
-  if (id === "admin" && adminUsername) {
+  const adminUsername = process.env.ADMIN_USERNAME!;
+  if (id === "admin") {
     done(null, { id: "admin", username: adminUsername });
   } else {
     done(null, false);

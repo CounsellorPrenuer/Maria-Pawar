@@ -1,15 +1,59 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileDown, DollarSign, Users, ShoppingCart, Mail } from "lucide-react";
+import { Download, FileDown, DollarSign, Users, ShoppingCart, Mail, LogOut } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Booking, Contact } from "@shared/schema";
 import { format } from "date-fns";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
+  const { data: authCheck, isLoading: authLoading } = useQuery<{ authenticated: boolean; user?: any }>({
+    queryKey: ["/api/auth/check"],
+  });
+
+  useEffect(() => {
+    if (!authLoading && !authCheck?.authenticated) {
+      setLocation("/admin/login");
+    }
+  }, [authCheck, authLoading, setLocation]);
+
+  const handleLogout = async () => {
+    try {
+      await apiRequest("/api/auth/logout", "POST");
+      toast({
+        title: "Logged out",
+        description: "Successfully logged out",
+      });
+      setLocation("/admin/login");
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to logout",
+      });
+    }
+  };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!authCheck?.authenticated) {
+    return null;
+  }
 
   const { data: stats } = useQuery<{
     totalBookings: number;
@@ -97,15 +141,25 @@ export default function AdminDashboard() {
                 Manage all customer data, bookings, and submissions
               </p>
             </div>
-            <Button
-              variant="default"
-              className="bg-accent text-accent-foreground"
-              onClick={() => exportToCSV([...bookings, ...contacts], "all-leads")}
-              data-testid="button-export-all"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Export All Data
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="default"
+                className="bg-accent text-accent-foreground"
+                onClick={() => exportToCSV([...bookings, ...contacts], "all-leads")}
+                data-testid="button-export-all"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export All Data
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleLogout}
+                data-testid="button-logout"
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </Button>
+            </div>
           </div>
         </div>
       </div>
