@@ -1,0 +1,147 @@
+You are an expert full-stack web developer agent. Your primary mission is to build a sophisticated, modern, and fully functional multi-page website for Maria Pawar, Founder of Inspire2Grow.
+
+Primary Goal: The website's aesthetic and UI/UX must be inspired by the premium feel of the leadcrestconsulting.com example (glassmorphism, smooth animations, clean layouts). However, the structure is fundamentally different and must be multi-page. You must strictly adhere to the client's vision of a minimalist homepage with navigation leading to separate, detailed pages for each service vertical. The final product must be elegant, professional, and fully functional, including live Razorpay integration.
+
+## 1. Core Technical Stack & Setup
+Framework: React with Vite.
+
+Routing: react-router-dom is mandatory for handling the multi-page navigation.
+
+Styling: Tailwind CSS.
+
+File Structure: Organize into src/pages (for each page component like Home.jsx, CareerGuidance.jsx, etc.), src/components (for reusable parts like Navbar, Footer), and src/assets.
+
+## 2. Design Language & Inspiration Analysis
+While the structure is different, the visual style should echo the leadcrestconsulting.com example.
+
+Layout & Spacing: Use clean, professional layouts with ample whitespace on every page.
+
+Color Palette: The client requested Green, Yellow, and Blue. Create a professional and inspiring palette.
+
+Primary Base: Use a deep, trustworthy blue (e.g., #003366) for primary text and backgrounds.
+
+Secondary Color: Use a vibrant but professional green (e.g., #2E8B57) for secondary elements, links, and highlights.
+
+Accent Color: Use a warm yellow or gold (e.g., #FFC107) sparingly as an accent for critical call-to-action buttons and key icons to draw attention.
+
+UI Elements: Implement Glassmorphism, soft shadows, and smooth hover effects across all pages.
+
+Animations: Use subtle on-scroll fade-in and slide-in animations to make content feel dynamic.
+
+## 3. Branding & Core Identity
+Brand Name: Inspire2Grow
+
+Founder's Name: Maria Pawar
+
+Logo: Use the image from this Google Drive link: https://drive.google.com/open?id=1VWm-0P-i6rOhILwvil6y0US6THZf8zhY
+
+Profile Picture: Use the image from this Google Drive link: https://drive.google.com/open?id=1jqOZMGboCbnh_Ej4vwSYnJe-kjrZ7EN6
+
+Typography: Use an elegant and clear font pairing, such as "Playfair Display" for headings and "Montserrat" for body text.
+
+## 4. Website Architecture & Page-by-Page Breakdown
+This is a multi-page site. Create the following pages and navigation structure.
+
+a. Navbar (Present on all pages)
+Style: A clean, sticky navbar with a subtle shadow.
+
+Content:
+
+Logo (left).
+
+Navigation Links (Center): These links must navigate to the different pages.
+
+Home
+
+Career Guidance
+
+Learning & Development
+
+Aviation
+
+Our Impact (This is the gallery page)
+
+Blog
+
+Contact Button (Right): A clean, primary button linking to the Contact page.
+
+b. Page 1: Home (The Landing Page)
+Layout: Minimalist, elegant, and professional, as requested. A clean two-column layout is ideal.
+
+Content: The homepage should only feature Maria's profile.
+
+Left Column: A large, high-quality display of her professional profile picture.
+
+Right Column:
+
+Headline: Maria Pawar
+
+Sub-headline: Founder, Inspire2Grow
+
+A concise version of her "Inspire2Grow Promise" and introductory paragraph from her bio.
+
+A single, clear CTA button: "Explore My Services".
+
+c. Page 2: Career Guidance
+Layout: A detailed service page.
+
+Content: Use the provided text about "Career Counselling | Inspire2Grow x Mentoria".
+
+Structure the content with subheadings, icons, and bullet points to highlight the benefits (85% accuracy, 12,000 options, one-to-one sessions).
+
+Create a simple "How It Works" visual timeline: 1. Psychometric Assessment -> 2. Detailed Report -> 3. Personalized Counselling.
+
+d. Page 3: Learning & Development
+Layout: A corporate-focused service page.
+
+Content: Use the provided text about "Learning & Development | Global Training Experience".
+
+Highlight the key stats: 24 years of experience, 36,000+ learners, 130 countries.
+
+Create a visually appealing grid or list of the programs offered (e.g., Executive Presence, Leadership Coaching, Communication Skills, Change Enablement, Emotional Intelligence, etc.).
+
+Include a section titled "More Programs" with a note: "Contact me to discuss bespoke training solutions tailored to your organization's needs." This leaves space for her to add more.
+
+e. Page 4: Aviation
+Layout: A clean, professional placeholder page.
+
+Content: This page is a placeholder for future content.
+
+Headline: Specialized Programs for the Aviation Industry
+
+Body Text: "With deep expertise in the aviation sector, Inspire2Grow offers specialized training and development programs designed to meet the unique challenges of the industry. More information coming soon. Please connect with me to discuss your specific requirements."
+
+f. Page 5: Our Impact (Gallery Page)
+Layout: This page replaces testimonials. Create two distinct sections.
+
+Content:
+
+Section 1 - Training in Action: An elegant image gallery. Use 6-9 professional placeholder images of corporate training sessions. The client must be able to easily replace these.
+
+Section 2 - Our Valued Partners: A clean grid designed to showcase logos of companies she has trained. Use 8 high-quality, recognizable placeholder logos (e.g., generic tech, finance, and industrial company logos).
+
+g. Page 6: Blog & Page 7: Contact
+Blog: A standard blog layout with placeholder articles.
+
+Contact: A standard contact page with a form and her contact details (2inspire2grow@hmail.com, +91 86000 45797) and social media links.
+
+## 5. Key Functionality & Integrations
+Razorpay Integration (No Commercials):
+
+The client wants no prices displayed. The integration must be for booking paid consultations.
+
+On the Contact Page, add a prominent button that says "Book & Pay for a Consultation".
+
+This button will trigger a Razorpay payment modal. The modal should allow for a pre-agreed payment or have a few fixed-price session options (e.g., "60-Minute Strategy Call").
+
+Use the live Razorpay credentials that you will be provided via Replit Secrets.
+
+Responsiveness: Flawless display on desktop, tablet, and mobile is essential.
+
+SEO & Metadata: Each page needs unique metadata.
+
+Home: Inspire2Grow - Maria Pawar | Leadership & Career Coach
+
+Career Guidance: Career Guidance for Students & Professionals | Inspire2Grow
+
+L&D: Corporate Learning & Development Programs | Inspire2Grow
