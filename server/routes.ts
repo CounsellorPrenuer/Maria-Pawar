@@ -92,8 +92,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Razorpay Integration
-  const Razorpay = require("razorpay");
-  const crypto = require("crypto");
+  const Razorpay = (await import("razorpay")).default;
+  const crypto = await import("crypto");
 
   const razorpay = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -111,7 +111,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const options = {
         amount: amount * 100,
         currency: "INR",
-        receipt: `receipt_${bookingId}`,
+        receipt: `rcpt_${bookingId}`.substring(0, 40),
       };
 
       const order = await razorpay.orders.create(options);
