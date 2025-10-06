@@ -1,91 +1,159 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import GlassCard from "./GlassCard";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
-interface ContactFormProps {
-  onSubmit: (data: { name: string; email: string; phone: string; message: string }) => void;
-}
+const contactFormSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please enter a valid email"),
+  phone: z.string().regex(/^[0-9]{10}$/, "Please enter a valid 10-digit phone number"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
+});
 
-export default function ContactForm({ onSubmit }: ContactFormProps) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [message, setMessage] = useState("");
+type ContactFormData = z.infer<typeof contactFormSchema>;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({ name, email, phone, message });
-    setName("");
-    setEmail("");
-    setPhone("");
-    setMessage("");
+export default function ContactForm() {
+  const { toast } = useToast();
+
+  const form = useForm<ContactFormData>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      message: "",
+    },
+  });
+
+  const createContactMutation = useMutation({
+    mutationFn: async (data: ContactFormData) => {
+      return apiRequest("POST", "/api/contacts", data);
+    },
+    onSuccess: async () => {
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for contacting us. We'll get back to you soon!",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/contacts"] });
+      form.reset();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to send message. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (data: ContactFormData) => {
+    createContactMutation.mutate(data);
   };
 
   return (
     <GlassCard>
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <Label htmlFor="contact-name">Full Name</Label>
-          <Input
-            id="contact-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            data-testid="input-contact-name"
-            className="mt-1"
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Enter your full name" 
+                    {...field} 
+                    data-testid="input-contact-name"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
 
-        <div>
-          <Label htmlFor="contact-email">Email Address</Label>
-          <Input
-            id="contact-email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            data-testid="input-contact-email"
-            className="mt-1"
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email Address</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="email" 
+                    placeholder="your.email@example.com" 
+                    {...field} 
+                    data-testid="input-contact-email"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
 
-        <div>
-          <Label htmlFor="contact-phone">Phone Number</Label>
-          <Input
-            id="contact-phone"
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-            data-testid="input-contact-phone"
-            className="mt-1"
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="tel" 
+                    placeholder="9876543210" 
+                    {...field} 
+                    data-testid="input-contact-phone"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
 
-        <div>
-          <Label htmlFor="contact-message">Message</Label>
-          <Textarea
-            id="contact-message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            required
-            rows={5}
-            data-testid="input-contact-message"
-            className="mt-1"
+          <FormField
+            control={form.control}
+            name="message"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Message</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Tell us about your requirements..." 
+                    rows={5}
+                    {...field} 
+                    data-testid="input-contact-message"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
-        </div>
 
-        <Button
-          type="submit"
-          className="w-full rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
-          data-testid="button-contact-submit"
-        >
-          Send Message
-        </Button>
-      </form>
+          <Button
+            type="submit"
+            className="w-full rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
+            disabled={createContactMutation.isPending}
+            data-testid="button-contact-submit"
+          >
+            {createContactMutation.isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Sending...
+              </>
+            ) : (
+              "Send Message"
+            )}
+          </Button>
+        </form>
+      </Form>
     </GlassCard>
   );
 }

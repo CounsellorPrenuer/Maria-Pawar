@@ -91,6 +91,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Razorpay Integration
+  const Razorpay = require("razorpay");
+  const crypto = require("crypto");
+
+  const razorpay = new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+  });
+
+  app.post("/api/razorpay/create-order", async (req, res) => {
+    try {
+      const { amount, bookingId } = req.body;
+
+      if (!amount || !bookingId) {
+        return res.status(400).json({ success: false, message: "Amount and bookingId are required" });
+      }
+
+      const options = {
+        amount: amount * 100,
+        currency: "INR",
+        receipt: `receipt_${bookingId}`,
+      };
+
+      const order = await razorpay.orders.create(options);
+
+      await storage.updateBookingPayment(bookingId, order.id, "pending");
+      
+      res.json({
+        success: true,
+        order: order,
+        key_id: process.env.RAZORPAY_KEY_ID,
+      });
+    } catch (error: any) {
+      console.error("Error creating Razorpay order:", error);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  });
+
+  app.post("/api/razorpay/verify-payment", async (req, res) => {
+    try {
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingId } = req.body;
+
+      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !bookingId) {
+        return res.status(400).json({
+          success: false,
+          message: "Missing required payment verification parameters",
+        });
+      }
+
+      const sign = razorpay_order_id + "|" + razorpay_payment_id;
+      const expectedSign = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
+        .update(sign)
+        .digest("hex");
+
+      if (razorpay_signature !== expectedSign) {
+        console.error("Payment signature verification failed for booking:", bookingId);
+        return res.status(400).json({
+          success: false,
+          message: "Payment signature verification failed. Invalid signature.",
+        });
+      }
+
+      await storage.updateBookingPayment(bookingId, razorpay_payment_id, "paid");
+      
+      res.json({
+        success: true,
+        message: "Payment verified successfully",
+        paymentId: razorpay_payment_id,
+      });
+    } catch (error: any) {
+      console.error("Error verifying payment:", error);
+      res.status(500).json({ success: false, message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
