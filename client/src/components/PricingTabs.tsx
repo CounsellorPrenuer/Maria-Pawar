@@ -2,12 +2,17 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import GlassCard from "./GlassCard";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
+
+interface Feature {
+  text: string;
+  included: boolean;
+}
 
 interface Service {
-  name: string;
+  planName: string;
   price: number;
-  features: string[];
+  features: Feature[];
   popular?: boolean;
 }
 
@@ -27,28 +32,30 @@ const pricingData: Category[] = [
     label: "8-9 Students",
     services: [
       {
-        name: "Career Clarity Program",
-        price: 15000,
+        planName: "Discover",
+        price: 5500,
         features: [
-          "Scientifically validated psychometric assessment",
-          "85% accuracy in career prediction",
-          "Access to 12,000+ career options database",
-          "Personalized career roadmap",
-          "One-on-one counseling session (60 min)",
-          "Subject selection guidance",
+          { text: "Psychometric assessment to measure your interests", included: true },
+          { text: "1 career counselling session with Mentoria's expert career coaches", included: true },
+          { text: "Lifetime access to Knowledge Gateway", included: true },
+          { text: "Invites to live webinars by industry experts", included: true },
+          { text: "Customized reports after each session with education pathways", included: false },
+          { text: "Guidance on studying abroad", included: false },
+          { text: "CV building during internship/graduation", included: false },
         ],
       },
       {
-        name: "Career Clarity Plus",
-        price: 25000,
+        planName: "Discover plus+",
+        price: 15000,
         popular: true,
         features: [
-          "Everything in Career Clarity Program",
-          "3 one-on-one counseling sessions",
-          "Parent counseling session included",
-          "Stream selection strategy",
-          "Skill development roadmap",
-          "6-month email support",
+          { text: "Psychometric assessments to measure your interests, personality and abilities", included: true },
+          { text: "8 career counselling sessions (1 every year) with Mentoria's expert career coaches until graduation", included: true },
+          { text: "Lifetime access to Knowledge Gateway", included: true },
+          { text: "Invites to live webinars by industry experts", included: true },
+          { text: "Customized reports after each session with education pathways", included: true },
+          { text: "Guidance on studying abroad", included: true },
+          { text: "CV building during internship/graduation", included: true },
         ],
       },
     ],
@@ -58,28 +65,30 @@ const pricingData: Category[] = [
     label: "10-12 Students",
     services: [
       {
-        name: "Career Discovery",
-        price: 20000,
+        planName: "Achieve Online",
+        price: 5999,
         features: [
-          "Advanced psychometric assessment",
-          "College & course selection guidance",
-          "Career path mapping",
-          "Two counseling sessions (90 min each)",
-          "Entrance exam strategy",
-          "Career portfolio development",
+          { text: "Psychometric assessment to measure your interests, personality and abilities", included: true },
+          { text: "1 career counselling session", included: true },
+          { text: "Lifetime access to Knowledge Gateway", included: true },
+          { text: "Pre-recorded webinars by industry experts", included: true },
+          { text: "Customized reports after each session with education pathways", included: false },
+          { text: "Guidance on studying abroad", included: false },
+          { text: "CV reviews during internship/graduation", included: false },
         ],
       },
       {
-        name: "Career Discovery Premium",
-        price: 35000,
+        planName: "Achieve Plus+",
+        price: 10599,
         popular: true,
         features: [
-          "Everything in Career Discovery",
-          "5 counseling sessions",
-          "Mock interview preparation",
-          "Resume building workshop",
-          "College application support",
-          "1-year career mentorship",
+          { text: "Psychometric assessment to measure your interests, personality and abilities", included: true },
+          { text: "4 career counselling sessions", included: true },
+          { text: "Lifetime access to Knowledge Gateway", included: true },
+          { text: "Attend live webinars by industry experts", included: true },
+          { text: "Customized reports after each session with education pathways", included: true },
+          { text: "Guidance on studying abroad", included: true },
+          { text: "CV reviews during internship/graduation", included: true },
         ],
       },
     ],
@@ -89,28 +98,30 @@ const pricingData: Category[] = [
     label: "College Graduates",
     services: [
       {
-        name: "Career Transition",
-        price: 30000,
+        planName: "Ascend Online",
+        price: 6499,
         features: [
-          "Comprehensive career assessment",
-          "Industry analysis & job market insights",
-          "Personal branding strategy",
-          "3 counseling sessions",
-          "Interview preparation",
-          "Networking guidance",
+          { text: "Psychometric assessment to measure your interests, personality and abilities", included: true },
+          { text: "1 career counselling session", included: true },
+          { text: "Lifetime access to Knowledge Gateway", included: true },
+          { text: "Pre-recorded webinars by industry experts", included: true },
+          { text: "Customized reports after each session with information on certificate/online courses", included: false },
+          { text: "Guidance on studying abroad", included: false },
+          { text: "CV reviews for job application", included: false },
         ],
       },
       {
-        name: "Career Accelerator",
-        price: 50000,
+        planName: "Ascend Plus+",
+        price: 10599,
         popular: true,
         features: [
-          "Everything in Career Transition",
-          "6 counseling sessions",
-          "Resume & LinkedIn optimization",
-          "Job search strategy",
-          "Salary negotiation coaching",
-          "3-month career support",
+          { text: "Psychometric assessment to measure your interests, personality and abilities", included: true },
+          { text: "3 career counselling sessions", included: true },
+          { text: "Lifetime access to Knowledge Gateway", included: true },
+          { text: "Attend live webinars by industry experts", included: true },
+          { text: "Customized reports after each session with information on certificate/online courses", included: true },
+          { text: "Guidance on studying abroad", included: true },
+          { text: "CV reviews for job application", included: true },
         ],
       },
     ],
@@ -120,28 +131,30 @@ const pricingData: Category[] = [
     label: "Working Professionals",
     services: [
       {
-        name: "Executive Coaching",
-        price: 75000,
+        planName: "Ascend Online",
+        price: 6499,
         features: [
-          "Leadership assessment",
-          "Executive presence development",
-          "6 one-on-one coaching sessions",
-          "Communication skills enhancement",
-          "Conflict resolution strategies",
-          "Personal development plan",
+          { text: "Psychometric assessment to measure your interests, personality and abilities", included: true },
+          { text: "1 career counselling session", included: true },
+          { text: "Lifetime access to Knowledge Gateway", included: true },
+          { text: "Pre-recorded webinars by industry experts", included: true },
+          { text: "Customized reports after each session with information on certificate/online courses", included: false },
+          { text: "Guidance on studying abroad", included: false },
+          { text: "CV reviews for job application", included: false },
         ],
       },
       {
-        name: "Executive Mastery",
-        price: 125000,
+        planName: "Ascend Plus+",
+        price: 10599,
         popular: true,
         features: [
-          "Everything in Executive Coaching",
-          "12 coaching sessions over 6 months",
-          "360-degree feedback analysis",
-          "Team leadership training",
-          "Strategic thinking workshops",
-          "Ongoing email & call support",
+          { text: "Psychometric assessment to measure your interests, personality and abilities", included: true },
+          { text: "2 career counselling sessions", included: true },
+          { text: "Lifetime access to Knowledge Gateway", included: true },
+          { text: "Attend live webinars by industry experts", included: true },
+          { text: "Customized reports after each session with information on certificate/online courses", included: true },
+          { text: "Guidance on studying abroad", included: true },
+          { text: "CV reviews for job application", included: true },
         ],
       },
     ],
@@ -188,8 +201,13 @@ export default function PricingTabs({ onBuyClick }: PricingTabsProps) {
                   ></div>
                   <GlassCard hover className="relative h-full flex flex-col">
                     <div className="text-center mb-6">
+                      <div className="inline-block px-4 py-1 rounded-full bg-secondary/10 border border-secondary/20 mb-3">
+                        <span className="text-xs font-semibold text-secondary uppercase tracking-wide">
+                          {index === 0 ? "Standard" : "Premium"}
+                        </span>
+                      </div>
                       <h3 className="font-serif text-2xl font-bold mb-2">
-                        {service.name}
+                        {service.planName}
                       </h3>
                       <div className="flex items-baseline justify-center gap-2">
                         <span className="text-4xl font-bold text-accent">
@@ -201,18 +219,30 @@ export default function PricingTabs({ onBuyClick }: PricingTabsProps) {
                     <div className="flex-1 space-y-3 mb-6">
                       {service.features.map((feature, idx) => (
                         <div key={idx} className="flex items-start gap-3">
-                          <div className="flex-shrink-0 w-5 h-5 rounded-full bg-secondary/20 flex items-center justify-center mt-0.5">
-                            <Check className="w-3 h-3 text-secondary" />
+                          <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5 ${
+                            feature.included 
+                              ? "bg-secondary/20" 
+                              : "bg-muted"
+                          }`}>
+                            {feature.included ? (
+                              <Check className="w-3 h-3 text-secondary" />
+                            ) : (
+                              <X className="w-3 h-3 text-muted-foreground" />
+                            )}
                           </div>
-                          <span className="text-sm text-muted-foreground">
-                            {feature}
+                          <span className={`text-sm ${
+                            feature.included 
+                              ? "text-muted-foreground" 
+                              : "text-muted-foreground/60"
+                          }`}>
+                            {feature.text}
                           </span>
                         </div>
                       ))}
                     </div>
 
                     <Button
-                      onClick={() => onBuyClick(service.name, category.label, service.price)}
+                      onClick={() => onBuyClick(service.planName, category.label, service.price)}
                       size="lg"
                       className={`w-full rounded-full ${
                         service.popular
