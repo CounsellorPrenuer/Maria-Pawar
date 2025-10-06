@@ -20,6 +20,7 @@ export interface IStorage {
   createBooking(booking: InsertBooking): Promise<Booking>;
   getBooking(id: string): Promise<Booking | undefined>;
   getAllBookings(): Promise<Booking[]>;
+  updateBookingOrderId(id: string, orderId: string): Promise<void>;
   updateBookingPayment(id: string, paymentId: string, status: string): Promise<void>;
   
   createContact(contact: InsertContact): Promise<Contact>;
@@ -54,6 +55,12 @@ export class DatabaseStorage implements IStorage {
 
   async getAllBookings(): Promise<Booking[]> {
     return db.select().from(bookings).orderBy(desc(bookings.createdAt));
+  }
+
+  async updateBookingOrderId(id: string, orderId: string): Promise<void> {
+    await db.update(bookings)
+      .set({ razorpayOrderId: orderId })
+      .where(eq(bookings.id, id));
   }
 
   async updateBookingPayment(id: string, paymentId: string, status: string): Promise<void> {

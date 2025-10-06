@@ -116,7 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const order = await razorpay.orders.create(options);
 
-      await storage.updateBookingPayment(bookingId, order.id, "pending");
+      await storage.updateBookingOrderId(bookingId, order.id);
       
       res.json({
         success: true,
