@@ -5,12 +5,15 @@ import {
   type InsertBooking,
   type Contact,
   type InsertContact,
+  type Blog,
+  type InsertBlog,
   users,
   bookings,
-  contacts
+  contacts,
+  blogs
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -25,6 +28,14 @@ export interface IStorage {
   
   createContact(contact: InsertContact): Promise<Contact>;
   getAllContacts(): Promise<Contact[]>;
+  
+  createBlog(blog: InsertBlog): Promise<Blog>;
+  getBlog(id: string): Promise<Blog | undefined>;
+  getBlogBySlug(slug: string): Promise<Blog | undefined>;
+  getAllBlogs(): Promise<Blog[]>;
+  updateBlog(id: string, blog: Partial<InsertBlog>): Promise<Blog | undefined>;
+  deleteBlog(id: string): Promise<void>;
+  toggleBlogFeatured(id: string): Promise<Blog | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -76,6 +87,48 @@ export class DatabaseStorage implements IStorage {
 
   async getAllContacts(): Promise<Contact[]> {
     return db.select().from(contacts).orderBy(desc(contacts.createdAt));
+  }
+
+  async createBlog(blog: InsertBlog): Promise<Blog> {
+    const result = await db.insert(blogs).values(blog).returning();
+    return result[0];
+  }
+
+  async getBlog(id: string): Promise<Blog | undefined> {
+    const result = await db.select().from(blogs).where(eq(blogs.id, id)).limit(1);
+    return result[0];
+  }
+
+  async getBlogBySlug(slug: string): Promise<Blog | undefined> {
+    const result = await db.select().from(blogs).where(eq(blogs.slug, slug)).limit(1);
+    return result[0];
+  }
+
+  async getAllBlogs(): Promise<Blog[]> {
+    return db.select().from(blogs).orderBy(desc(blogs.createdAt));
+  }
+
+  async updateBlog(id: string, blog: Partial<InsertBlog>): Promise<Blog | undefined> {
+    const result = await db.update(blogs)
+      .set({ ...blog, updatedAt: sql`now()` })
+      .where(eq(blogs.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteBlog(id: string): Promise<void> {
+    await db.delete(blogs).where(eq(blogs.id, id));
+  }
+
+  async toggleBlogFeatured(id: string): Promise<Blog | undefined> {
+    const blog = await this.getBlog(id);
+    if (!blog) return undefined;
+    
+    const result = await db.update(blogs)
+      .set({ featured: !blog.featured, updatedAt: sql`now()` })
+      .where(eq(blogs.id, id))
+      .returning();
+    return result[0];
   }
 }
 
