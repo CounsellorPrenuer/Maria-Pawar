@@ -34,7 +34,7 @@ export default function AdminLogin() {
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true);
     try {
-      await apiRequest("/api/auth/login", "POST", data);
+      await apiRequest("POST", "/api/auth/login", data);
       toast({
         title: "Success",
         description: "Successfully logged in",
