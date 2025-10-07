@@ -12,6 +12,13 @@ export default function BlogPost() {
 
   const { data: blog, isLoading } = useQuery<Blog>({
     queryKey: ["/api/blogs", slug],
+    queryFn: async () => {
+      const response = await fetch(`/api/blogs/${slug}`);
+      if (!response.ok) {
+        throw new Error("Blog not found");
+      }
+      return response.json();
+    },
     enabled: !!slug,
   });
 
