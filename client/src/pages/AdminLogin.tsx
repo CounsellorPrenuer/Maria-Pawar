@@ -35,8 +35,8 @@ export default function AdminLogin() {
     setIsLoading(true);
     try {
       await apiRequest("POST", "/api/auth/login", data);
-      // Invalidate auth check query to refetch with new session
-      await queryClient.invalidateQueries({ queryKey: ["/api/auth/check"] });
+      // Refetch auth check query and wait for it to complete
+      await queryClient.refetchQueries({ queryKey: ["/api/auth/check"] });
       toast({
         title: "Success",
         description: "Successfully logged in",
