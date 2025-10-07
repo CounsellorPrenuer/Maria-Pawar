@@ -12,6 +12,7 @@ import Aviation from "@/pages/Aviation";
 import OurImpact from "@/pages/OurImpact";
 import Pricing from "@/pages/Pricing";
 import Blog from "@/pages/Blog";
+import BlogPost from "@/pages/BlogPost";
 import Contact from "@/pages/Contact";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AdminLogin from "@/pages/AdminLogin";
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/our-impact" component={OurImpact} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/blog" component={Blog} />
+      <Route path="/blog/:slug" component={BlogPost} />
       <Route path="/contact" component={Contact} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin/bookings" component={AdminDashboard} />
