@@ -2,7 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import passport from "passport";
 import { storage } from "./storage";
-import { insertBookingSchema, insertContactSchema } from "@shared/schema";
+import { insertBookingSchema, insertContactSchema, insertBlogSchema } from "@shared/schema";
 
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
@@ -104,6 +104,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const contacts = await storage.getAllContacts();
       res.json(contacts);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Blogs API (public read, admin write)
+  app.get("/api/blogs", async (req, res) => {
+    try {
+      const blogs = await storage.getAllBlogs();
+      res.json(blogs);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/blogs/:slug", async (req, res) => {
+    try {
+      const blog = await storage.getBlogBySlug(req.params.slug);
+      if (!blog) {
+        return res.status(404).json({ error: "Blog not found" });
+      }
+      res.json(blog);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/admin/blogs", requireAuth, async (req, res) => {
+    try {
+      const validatedData = insertBlogSchema.parse(req.body);
+      const blog = await storage.createBlog(validatedData);
+      res.json(blog);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.put("/api/admin/blogs/:id", requireAuth, async (req, res) => {
+    try {
+      const validatedData = insertBlogSchema.partial().parse(req.body);
+      const blog = await storage.updateBlog(req.params.id, validatedData);
+      if (!blog) {
+        return res.status(404).json({ error: "Blog not found" });
+      }
+      res.json(blog);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.delete("/api/admin/blogs/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deleteBlog(req.params.id);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.patch("/api/admin/blogs/:id/feature", requireAuth, async (req, res) => {
+    try {
+      const blog = await storage.toggleBlogFeatured(req.params.id);
+      if (!blog) {
+        return res.status(404).json({ error: "Blog not found" });
+      }
+      res.json(blog);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
