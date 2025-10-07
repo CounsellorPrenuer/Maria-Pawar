@@ -195,6 +195,9 @@ export default function AdminDashboard() {
             <TabsTrigger value="bookings" data-testid="tab-bookings">
               Bookings ({stats?.totalBookings || 0})
             </TabsTrigger>
+            <TabsTrigger value="payments" data-testid="tab-payments">
+              Payments ({stats?.paidBookings || 0})
+            </TabsTrigger>
             <TabsTrigger value="contact-forms" data-testid="tab-contact-forms">
               Contact Forms ({stats?.totalContacts || 0})
             </TabsTrigger>
@@ -455,6 +458,77 @@ export default function AdminDashboard() {
                           </td>
                         </tr>
                       ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="payments">
+            <Card className="p-6 backdrop-blur-sm bg-card/50">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Payment Transactions</h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => exportToCSV(bookings.filter(b => b.paymentStatus === 'paid'), "payments")}
+                  disabled={bookings.filter(b => b.paymentStatus === 'paid').length === 0}
+                >
+                  <FileDown className="w-4 h-4 mr-2" />
+                  Export
+                </Button>
+              </div>
+              {bookings.filter(b => b.paymentStatus === 'paid').length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  No payment transactions to display
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="border-b">
+                      <tr>
+                        <th className="text-left py-2">Customer</th>
+                        <th className="text-left py-2">Service</th>
+                        <th className="text-left py-2">Amount</th>
+                        <th className="text-left py-2">Razorpay Order ID</th>
+                        <th className="text-left py-2">Razorpay Payment ID</th>
+                        <th className="text-left py-2">Status</th>
+                        <th className="text-left py-2">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {bookings
+                        .filter(booking => booking.paymentStatus === 'paid')
+                        .map((booking) => (
+                          <tr key={booking.id} className="border-b hover:bg-muted/50">
+                            <td className="py-3">
+                              <div className="font-medium">{booking.name}</div>
+                              <div className="text-sm text-muted-foreground">{booking.email}</div>
+                            </td>
+                            <td className="py-3 text-sm">
+                              <div className="font-medium">{booking.serviceName}</div>
+                              <div className="text-muted-foreground">{booking.category}</div>
+                            </td>
+                            <td className="py-3 font-semibold text-green-600">
+                              ₹{booking.price.toLocaleString()}
+                            </td>
+                            <td className="py-3 text-sm font-mono text-muted-foreground">
+                              {booking.razorpayOrderId || "-"}
+                            </td>
+                            <td className="py-3 text-sm font-mono text-muted-foreground">
+                              {booking.razorpayPaymentId || "-"}
+                            </td>
+                            <td className="py-3">
+                              <Badge variant="default" className="bg-green-600">
+                                Paid
+                              </Badge>
+                            </td>
+                            <td className="py-3 text-sm text-muted-foreground">
+                              {format(new Date(booking.createdAt), "MMM dd, yyyy HH:mm")}
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
