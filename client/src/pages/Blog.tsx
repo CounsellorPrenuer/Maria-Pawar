@@ -1,27 +1,22 @@
 import GlassCard from "@/components/GlassCard";
 import { Calendar, User, ArrowRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
+import type { Blog } from "@shared/schema";
+import { format } from "date-fns";
 
 export default function Blog() {
-  const blogPosts = [
-    {
-      title: "Navigating Career Choices in the AI Era",
-      excerpt: "Discover how artificial intelligence is reshaping career landscapes and what it means for your future.",
-      date: "March 15, 2024",
-      author: "Maria Pawar",
-    },
-    {
-      title: "Building Executive Presence: A Guide for Leaders",
-      excerpt: "Learn the key elements of commanding presence that inspire teams and drive organizational success.",
-      date: "March 10, 2024",
-      author: "Maria Pawar",
-    },
-    {
-      title: "The Power of Emotional Intelligence in the Workplace",
-      excerpt: "Explore why EQ is becoming more important than IQ in modern professional environments.",
-      date: "March 5, 2024",
-      author: "Maria Pawar",
-    },
-  ];
+  const { data: blogs = [], isLoading } = useQuery<Blog[]>({
+    queryKey: ["/api/blogs"],
+  });
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Loading blogs...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen">
@@ -34,29 +29,44 @@ export default function Blog() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {blogPosts.map((post, index) => (
-              <GlassCard key={index} hover className="flex flex-col">
-                <div className="flex-1">
-                  <h2 className="font-serif text-2xl font-bold mb-3">{post.title}</h2>
-                  <p className="text-muted-foreground mb-4">{post.excerpt}</p>
-                </div>
-                <div className="flex items-center justify-between text-sm text-muted-foreground border-t border-border/30 pt-4 mt-4">
-                  <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {post.date}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <User className="w-4 h-4" />
-                      {post.author}
-                    </span>
-                  </div>
-                  <ArrowRight className="w-5 h-5 text-secondary" />
-                </div>
-              </GlassCard>
-            ))}
-          </div>
+          {blogs.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              No blog posts yet. Check back soon!
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {blogs.map((post) => (
+                <Link key={post.id} href={`/blog/${post.slug}`}>
+                  <a data-testid={`blog-card-${post.slug}`}>
+                    <GlassCard hover className="flex flex-col h-full">
+                      <div className="flex-1">
+                        {post.featured && (
+                          <div className="mb-2">
+                            <span className="text-xs font-semibold text-accent">FEATURED</span>
+                          </div>
+                        )}
+                        <h2 className="font-serif text-2xl font-bold mb-3">{post.title}</h2>
+                        <p className="text-muted-foreground mb-4">{post.excerpt}</p>
+                      </div>
+                      <div className="flex items-center justify-between text-sm text-muted-foreground border-t border-border/30 pt-4 mt-4">
+                        <div className="flex items-center gap-4">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-4 h-4" />
+                            {format(new Date(post.createdAt), "MMM dd, yyyy")}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <User className="w-4 h-4" />
+                            {post.author}
+                          </span>
+                        </div>
+                        <ArrowRight className="w-5 h-5 text-secondary" />
+                      </div>
+                    </GlassCard>
+                  </a>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
