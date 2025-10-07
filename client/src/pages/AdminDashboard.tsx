@@ -20,6 +20,30 @@ export default function AdminDashboard() {
     queryKey: ["/api/auth/check"],
   });
 
+  const isAuthenticated = authCheck?.authenticated ?? false;
+
+  const { data: stats } = useQuery<{
+    totalBookings: number;
+    totalContacts: number;
+    totalLeads: number;
+    paidBookings: number;
+    pendingBookings: number;
+    totalRevenue: number;
+  }>({
+    queryKey: ["/api/admin/stats"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: bookings = [] } = useQuery<Booking[]>({
+    queryKey: ["/api/bookings"],
+    enabled: isAuthenticated,
+  });
+
+  const { data: contacts = [] } = useQuery<Contact[]>({
+    queryKey: ["/api/contacts"],
+    enabled: isAuthenticated,
+  });
+
   useEffect(() => {
     if (!authLoading && !authCheck?.authenticated) {
       setLocation("/admin/login");
@@ -54,25 +78,6 @@ export default function AdminDashboard() {
   if (!authCheck?.authenticated) {
     return null;
   }
-
-  const { data: stats } = useQuery<{
-    totalBookings: number;
-    totalContacts: number;
-    totalLeads: number;
-    paidBookings: number;
-    pendingBookings: number;
-    totalRevenue: number;
-  }>({
-    queryKey: ["/api/admin/stats"],
-  });
-
-  const { data: bookings = [] } = useQuery<Booking[]>({
-    queryKey: ["/api/bookings"],
-  });
-
-  const { data: contacts = [] } = useQuery<Contact[]>({
-    queryKey: ["/api/contacts"],
-  });
 
   const exportToCSV = (data: any[], filename: string) => {
     if (data.length === 0) return;
