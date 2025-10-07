@@ -113,6 +113,20 @@ export default function AdminDashboard() {
       bgColor: "bg-primary/10",
     },
     {
+      label: "Paid Bookings",
+      value: stats?.paidBookings || 0,
+      icon: ShoppingCart,
+      color: "text-green-600",
+      bgColor: "bg-green-600/10",
+    },
+    {
+      label: "Pending Bookings",
+      value: stats?.pendingBookings || 0,
+      icon: ShoppingCart,
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-600/10",
+    },
+    {
       label: "Contact Forms",
       value: stats?.totalContacts || 0,
       icon: Mail,
@@ -130,8 +144,8 @@ export default function AdminDashboard() {
       label: "Revenue",
       value: `₹${stats?.totalRevenue?.toLocaleString() || 0}`,
       icon: DollarSign,
-      color: "text-green-600",
-      bgColor: "bg-green-600/10",
+      color: "text-blue-600",
+      bgColor: "bg-blue-600/10",
     },
   ];
 
