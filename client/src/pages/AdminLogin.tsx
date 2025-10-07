@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Lock } from "lucide-react";
 
 const loginSchema = z.object({
@@ -35,6 +35,8 @@ export default function AdminLogin() {
     setIsLoading(true);
     try {
       await apiRequest("POST", "/api/auth/login", data);
+      // Invalidate auth check query to refetch with new session
+      await queryClient.invalidateQueries({ queryKey: ["/api/auth/check"] });
       toast({
         title: "Success",
         description: "Successfully logged in",

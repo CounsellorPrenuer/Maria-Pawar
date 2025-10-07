@@ -38,15 +38,6 @@ passport.use(
     const adminUsername = process.env.ADMIN_USERNAME!;
     const adminPassword = process.env.ADMIN_PASSWORD!;
 
-    // Debug logging
-    console.log('[DEBUG] Login attempt:');
-    console.log('  Received username:', JSON.stringify(username));
-    console.log('  Expected username:', JSON.stringify(adminUsername));
-    console.log('  Username match:', username === adminUsername);
-    console.log('  Received password length:', password.length);
-    console.log('  Expected password length:', adminPassword.length);
-    console.log('  Password match:', password === adminPassword);
-
     if (username === adminUsername && password === adminPassword) {
       return done(null, { id: "admin", username: adminUsername });
     }
