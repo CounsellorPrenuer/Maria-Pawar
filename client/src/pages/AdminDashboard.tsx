@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Download, FileDown, DollarSign, Users, ShoppingCart, Mail, LogOut } from "lucide-react";
+import { Download, FileDown, DollarSign, Users, ShoppingCart, Mail, LogOut, FileText } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Booking, Contact } from "@shared/schema";
 import { format } from "date-fns";
@@ -161,6 +161,14 @@ export default function AdminDashboard() {
               </p>
             </div>
             <div className="flex gap-2">
+              <Button
+                variant="secondary"
+                onClick={() => setLocation("/admin/blogs")}
+                data-testid="button-blog-management"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Blog Management
+              </Button>
               <Button
                 variant="default"
                 className="bg-accent text-accent-foreground"
