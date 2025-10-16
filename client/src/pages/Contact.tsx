@@ -106,15 +106,15 @@ export default function Contact() {
               className="cursor-pointer"
             >
               <GlassCard hover className="text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 mb-6 mx-auto">
-                <Sparkles className="w-8 h-8 text-accent" />
-              </div>
-              <h3 className="font-serif text-xl font-bold mb-3">
-                Looking for Personalized Guidance?
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                Check out our pricing page to explore our comprehensive career counseling and corporate training packages
-              </p>
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 mb-6 mx-auto">
+                  <Sparkles className="w-8 h-8 text-accent" />
+                </div>
+                <h3 className="font-serif text-xl font-bold mb-3">
+                  Looking for Personalized Guidance?
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Check out our pricing page to explore our comprehensive career counseling and corporate training packages
+                </p>
               </GlassCard>
             </div>
 
