@@ -134,9 +134,9 @@ export default function ContactForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="Career Guidance">Career Guidance</SelectItem>
-                    <SelectItem value="Learning & Development">Learning & Development</SelectItem>
-                    <SelectItem value="Aviation">Aviation</SelectItem>
+                    <SelectItem value="Career Guidance" data-testid="option-service-career-guidance">Career Guidance</SelectItem>
+                    <SelectItem value="Learning & Development" data-testid="option-service-learning-development">Learning & Development</SelectItem>
+                    <SelectItem value="Aviation" data-testid="option-service-aviation">Aviation</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
