@@ -175,6 +175,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/admin/blogs/generate", requireAuth, async (req, res) => {
+    try {
+      const { generateBlogPost } = await import("./openai");
+      const { topic, keywords, tone, length } = req.body;
+      
+      if (!topic || !keywords || !tone || !length) {
+        return res.status(400).json({ error: "Missing required fields" });
+      }
+      
+      const blogData = await generateBlogPost({ topic, keywords, tone, length });
+      res.json(blogData);
+    } catch (error: any) {
+      console.error("Error generating blog:", error);
+      res.status(500).json({ error: error.message || "Failed to generate blog post" });
+    }
+  });
+
   // Admin Dashboard Stats (protected)
   app.get("/api/admin/stats", requireAuth, async (req, res) => {
     try {
