@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { Mail, Phone, MapPin, Sparkles } from "lucide-react";
+import { Mail, Phone, MapPin, Sparkles, Briefcase, Users, ArrowRight } from "lucide-react";
 import { useLocation } from "wouter";
 import ContactForm from "@/components/ContactForm";
 import GlassCard from "@/components/GlassCard";
 import AnimatedSection from "@/components/AnimatedSection";
 import FloatingElements from "@/components/FloatingElements";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export default function Contact() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -120,37 +119,65 @@ export default function Contact() {
             </div>
 
             <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle className="font-serif text-2xl">Choose Your Service</DialogTitle>
+              <DialogContent className="sm:max-w-2xl border-0 bg-background/95 backdrop-blur-xl">
+                <DialogHeader className="text-center pb-2">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 mb-4 mx-auto">
+                    <Sparkles className="w-8 h-8 text-accent" />
+                  </div>
+                  <DialogTitle className="font-serif text-3xl mb-2">Choose Your Path</DialogTitle>
+                  <DialogDescription className="text-base text-muted-foreground">
+                    Select the service that best fits your needs
+                  </DialogDescription>
                 </DialogHeader>
-                <div className="space-y-3 py-4">
-                  <Button
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-6">
+                  <div
                     onClick={() => handleServiceChoice("/career-guidance")}
-                    className="w-full h-auto py-4 px-6 text-left justify-start"
-                    variant="outline"
+                    className="group relative p-6 rounded-xl border-2 border-border bg-card hover-elevate active-elevate-2 cursor-pointer transition-all"
                     data-testid="button-choose-career-guidance"
                   >
-                    <div>
-                      <div className="font-semibold mb-1">Career Guidance</div>
-                      <div className="text-sm text-muted-foreground font-normal">
-                        Personalized career counseling and development
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
+                        <Briefcase className="w-7 h-7 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-serif text-xl font-bold mb-2">
+                          Career Guidance
+                        </h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          Personalized career counseling and professional development strategies
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                        <span>Explore Services</span>
+                        <ArrowRight className="w-4 h-4" />
                       </div>
                     </div>
-                  </Button>
-                  <Button
+                  </div>
+
+                  <div
                     onClick={() => handleServiceChoice("/learning-development")}
-                    className="w-full h-auto py-4 px-6 text-left justify-start"
-                    variant="outline"
+                    className="group relative p-6 rounded-xl border-2 border-border bg-card hover-elevate active-elevate-2 cursor-pointer transition-all"
                     data-testid="button-choose-learning-development"
                   >
-                    <div>
-                      <div className="font-semibold mb-1">Learning & Development</div>
-                      <div className="text-sm text-muted-foreground font-normal">
-                        Corporate training and skill development
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className="w-14 h-14 rounded-xl bg-secondary/10 flex items-center justify-center">
+                        <Users className="w-7 h-7 text-secondary" />
+                      </div>
+                      <div>
+                        <h3 className="font-serif text-xl font-bold mb-2">
+                          Learning & Development
+                        </h3>
+                        <p className="text-sm text-muted-foreground leading-relaxed">
+                          Corporate training and organizational skill development programs
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm font-semibold text-secondary">
+                        <span>Explore Services</span>
+                        <ArrowRight className="w-4 h-4" />
                       </div>
                     </div>
-                  </Button>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>
