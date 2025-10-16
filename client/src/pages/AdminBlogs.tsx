@@ -9,10 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Plus, Edit, Trash2, Star, StarOff, ArrowLeft } from "lucide-react";
+import { Plus, Edit, Trash2, Star, StarOff, ArrowLeft, Sparkles } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -33,6 +34,10 @@ export default function AdminBlogs() {
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
+  const [aiTopic, setAiTopic] = useState("");
+  const [aiKeywords, setAiKeywords] = useState("");
+  const [aiTone, setAiTone] = useState("professional");
+  const [aiLength, setAiLength] = useState("medium");
 
   const { data: authCheck, isLoading: authLoading } = useQuery<{ authenticated: boolean }>({
     queryKey: ["/api/auth/check"],
@@ -112,6 +117,36 @@ export default function AdminBlogs() {
     },
   });
 
+  const generateBlogMutation = useMutation({
+    mutationFn: (data: { topic: string; keywords: string; tone: string; length: string }) =>
+      apiRequest("POST", "/api/admin/blogs/generate", data),
+    onSuccess: (data: any) => {
+      form.setValue("title", data.title);
+      form.setValue("slug", data.slug);
+      form.setValue("excerpt", data.excerpt);
+      form.setValue("content", data.content);
+      toast({ title: "Success", description: "AI blog generated successfully!" });
+    },
+    onError: (error: any) => {
+      toast({ variant: "destructive", title: "Error", description: error.message });
+    },
+  });
+
+  const handleGenerateBlog = () => {
+    if (!aiTopic || !aiKeywords) {
+      toast({ variant: "destructive", title: "Error", description: "Please enter topic and keywords" });
+      return;
+    }
+
+    const lengthText = aiLength === "medium" ? "Medium (500-1000 words)" : "Short (300-500 words)";
+    generateBlogMutation.mutate({
+      topic: aiTopic,
+      keywords: aiKeywords,
+      tone: aiTone,
+      length: lengthText,
+    });
+  };
+
   const onSubmit = (data: BlogFormData) => {
     if (editingBlog) {
       updateMutation.mutate({ id: editingBlog.id, data });
@@ -135,6 +170,10 @@ export default function AdminBlogs() {
 
   const handleNewBlog = () => {
     setEditingBlog(null);
+    setAiTopic("");
+    setAiKeywords("");
+    setAiTone("professional");
+    setAiLength("medium");
     form.reset({
       title: "",
       slug: "",
@@ -200,6 +239,75 @@ export default function AdminBlogs() {
                 <DialogHeader>
                   <DialogTitle>{editingBlog ? "Edit Blog Post" : "Create New Blog Post"}</DialogTitle>
                 </DialogHeader>
+                
+                {!editingBlog && (
+                  <div className="border border-primary/20 rounded-lg p-4 bg-primary/5 space-y-4">
+                    <div className="flex items-center gap-2 text-primary">
+                      <Sparkles className="w-5 h-5" />
+                      <h3 className="font-semibold">AI Blog Generation</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      Generate a professional blog post using AI based on your topic and preferences.
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Topic *</label>
+                        <Input
+                          placeholder="e.g., How to transition to leadership roles"
+                          value={aiTopic}
+                          onChange={(e) => setAiTopic(e.target.value)}
+                          data-testid="input-ai-topic"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Keywords (comma-separated) *</label>
+                        <Input
+                          placeholder="e.g., leadership, career, management"
+                          value={aiKeywords}
+                          onChange={(e) => setAiKeywords(e.target.value)}
+                          data-testid="input-ai-keywords"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Tone</label>
+                        <Select value={aiTone} onValueChange={setAiTone}>
+                          <SelectTrigger data-testid="select-ai-tone">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="professional">Professional</SelectItem>
+                            <SelectItem value="casual">Casual</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-medium">Length</label>
+                        <Select value={aiLength} onValueChange={setAiLength}>
+                          <SelectTrigger data-testid="select-ai-length">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="medium">Medium (500-1000 words)</SelectItem>
+                            <SelectItem value="short">Short (300-500 words)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={handleGenerateBlog}
+                      disabled={generateBlogMutation.isPending}
+                      className="w-full bg-accent"
+                      data-testid="button-generate-blog"
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      {generateBlogMutation.isPending ? "Generating..." : "Generate Blog Post"}
+                    </Button>
+                  </div>
+                )}
+
                 <Form {...form}>
                   <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
