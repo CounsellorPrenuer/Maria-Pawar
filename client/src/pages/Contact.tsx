@@ -1,10 +1,22 @@
+import { useState } from "react";
 import { Mail, Phone, MapPin, Sparkles } from "lucide-react";
+import { useLocation } from "wouter";
 import ContactForm from "@/components/ContactForm";
 import GlassCard from "@/components/GlassCard";
 import AnimatedSection from "@/components/AnimatedSection";
 import FloatingElements from "@/components/FloatingElements";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 export default function Contact() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [, setLocation] = useLocation();
+
+  const handleServiceChoice = (path: string) => {
+    setIsModalOpen(false);
+    setLocation(path);
+  };
+
   return (
     <div className="min-h-screen relative overflow-hidden">
       <FloatingElements />
@@ -38,15 +50,24 @@ export default function Contact() {
                   <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center">
                     <Mail className="w-6 h-6 text-secondary" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="font-semibold mb-1">Email</p>
-                    <a
-                      href="mailto:2inspire2grow@gmail.com"
-                      className="text-muted-foreground hover:text-secondary transition-colors break-all"
-                      data-testid="link-contact-email"
-                    >
-                      2inspire2grow@gmail.com
-                    </a>
+                    <div className="space-y-1">
+                      <a
+                        href="mailto:2inspires2grow@gmail.com"
+                        className="text-muted-foreground hover:text-secondary transition-colors break-all block"
+                        data-testid="link-contact-email-1"
+                      >
+                        2inspires2grow@gmail.com
+                      </a>
+                      <a
+                        href="mailto:inspirementoria@gmail.com"
+                        className="text-muted-foreground hover:text-secondary transition-colors break-all block"
+                        data-testid="link-contact-email-2"
+                      >
+                        inspirementoria@gmail.com
+                      </a>
+                    </div>
                   </div>
                 </div>
 
@@ -80,7 +101,12 @@ export default function Contact() {
               </div>
             </GlassCard>
 
-            <GlassCard hover className="text-center">
+            <div 
+              onClick={() => setIsModalOpen(true)}
+              data-testid="card-personalized-guidance"
+              className="cursor-pointer"
+            >
+              <GlassCard hover className="text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 mb-6 mx-auto">
                 <Sparkles className="w-8 h-8 text-accent" />
               </div>
@@ -90,7 +116,44 @@ export default function Contact() {
               <p className="text-muted-foreground mb-4">
                 Check out our pricing page to explore our comprehensive career counseling and corporate training packages
               </p>
-            </GlassCard>
+              </GlassCard>
+            </div>
+
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle className="font-serif text-2xl">Choose Your Service</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-3 py-4">
+                  <Button
+                    onClick={() => handleServiceChoice("/career-guidance")}
+                    className="w-full h-auto py-4 px-6 text-left justify-start"
+                    variant="outline"
+                    data-testid="button-choose-career-guidance"
+                  >
+                    <div>
+                      <div className="font-semibold mb-1">Career Guidance</div>
+                      <div className="text-sm text-muted-foreground font-normal">
+                        Personalized career counseling and development
+                      </div>
+                    </div>
+                  </Button>
+                  <Button
+                    onClick={() => handleServiceChoice("/learning-development")}
+                    className="w-full h-auto py-4 px-6 text-left justify-start"
+                    variant="outline"
+                    data-testid="button-choose-learning-development"
+                  >
+                    <div>
+                      <div className="font-semibold mb-1">Learning & Development</div>
+                      <div className="text-sm text-muted-foreground font-normal">
+                        Corporate training and skill development
+                      </div>
+                    </div>
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </AnimatedSection>
         </div>
       </div>

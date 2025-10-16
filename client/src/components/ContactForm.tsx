@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import GlassCard from "./GlassCard";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,7 +16,8 @@ const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email"),
   phone: z.string().regex(/^[0-9]{10}$/, "Please enter a valid 10-digit phone number"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  serviceType: z.string().min(1, "Please select a service type"),
+  message: z.string().optional(),
 });
 
 type ContactFormData = z.infer<typeof contactFormSchema>;
@@ -29,6 +31,7 @@ export default function ContactForm() {
       name: "",
       email: "",
       phone: "",
+      serviceType: "",
       message: "",
     },
   });
@@ -120,10 +123,33 @@ export default function ContactForm() {
 
           <FormField
             control={form.control}
+            name="serviceType"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Service Type</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger data-testid="select-service-type">
+                      <SelectValue placeholder="Select a service" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Career Guidance">Career Guidance</SelectItem>
+                    <SelectItem value="Learning & Development">Learning & Development</SelectItem>
+                    <SelectItem value="Aviation">Aviation</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
             name="message"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Message</FormLabel>
+                <FormLabel>Message (Optional)</FormLabel>
                 <FormControl>
                   <Textarea 
                     placeholder="Tell us about your requirements..." 
@@ -139,7 +165,7 @@ export default function ContactForm() {
 
           <Button
             type="submit"
-            className="w-full rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
+            className="w-full rounded-full bg-accent"
             disabled={createContactMutation.isPending}
             data-testid="button-contact-submit"
           >
