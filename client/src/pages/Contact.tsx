@@ -140,14 +140,12 @@ export default function Contact() {
                       <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
                         <Briefcase className="w-7 h-7 text-primary" />
                       </div>
-                      <div>
-                        <h3 className="font-serif text-xl font-bold mb-2">
-                          Career Guidance
-                        </h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          Personalized career counseling and professional development strategies
-                        </p>
-                      </div>
+                      <h3 className="font-serif text-xl font-bold mb-2">
+                        Career Guidance
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Personalized career counseling and professional development strategies
+                      </p>
                       <div className="flex items-center gap-2 text-sm font-semibold text-primary">
                         <span>Explore Services</span>
                         <ArrowRight className="w-4 h-4" />
@@ -164,14 +162,12 @@ export default function Contact() {
                       <div className="w-14 h-14 rounded-xl bg-secondary/10 flex items-center justify-center">
                         <Users className="w-7 h-7 text-secondary" />
                       </div>
-                      <div>
-                        <h3 className="font-serif text-xl font-bold mb-2">
-                          Learning & Development
-                        </h3>
-                        <p className="text-sm text-muted-foreground leading-relaxed">
-                          Corporate training and organizational skill development programs
-                        </p>
-                      </div>
+                      <h3 className="font-serif text-xl font-bold mb-2">
+                        Learning & Development
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        Corporate training and organizational skill development programs
+                      </p>
                       <div className="flex items-center gap-2 text-sm font-semibold text-secondary">
                         <span>Explore Services</span>
                         <ArrowRight className="w-4 h-4" />
