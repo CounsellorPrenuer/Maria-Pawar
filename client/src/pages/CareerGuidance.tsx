@@ -1,7 +1,9 @@
-import { ClipboardList, BarChart, MessageSquare, Target, Users, Award } from "lucide-react";
+import { ClipboardList, BarChart, MessageSquare, Target, Users, Award, Handshake } from "lucide-react";
 import Timeline from "@/components/Timeline";
 import StatsCard from "@/components/StatsCard";
 import GlassCard from "@/components/GlassCard";
+import inspire2growLogo from "@assets/logo_1759744643906.png";
+import mentoriaLogo from "@assets/mentoria-logo_1760615965436.png";
 
 export default function CareerGuidance() {
   const timelineSteps = [
@@ -27,8 +29,21 @@ export default function CareerGuidance() {
       <div className="bg-gradient-to-br from-primary/10 to-secondary/10 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h1 className="font-serif text-4xl lg:text-5xl font-bold mb-6">
-              Career Counselling | Inspire2Grow x Mentoria
+            <div className="flex items-center justify-center gap-4 sm:gap-6 mb-6 flex-wrap">
+              <img 
+                src={inspire2growLogo} 
+                alt="Inspire2Grow" 
+                className="h-12 sm:h-16 lg:h-20 w-auto object-contain"
+              />
+              <Handshake className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-accent flex-shrink-0" />
+              <img 
+                src={mentoriaLogo} 
+                alt="Mentoria" 
+                className="h-12 sm:h-16 lg:h-20 w-auto object-contain"
+              />
+            </div>
+            <h1 className="font-serif text-3xl lg:text-4xl font-bold mb-4">
+              Career Counselling
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Discover your true potential with scientifically-backed career guidance designed for students and professionals at every stage of their journey.
