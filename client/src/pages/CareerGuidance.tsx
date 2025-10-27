@@ -36,7 +36,7 @@ export default function CareerGuidance() {
             
             <div className="flex items-center justify-center gap-4 sm:gap-8 mb-8 flex-wrap">
               <div className="flex flex-col items-center group">
-                <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 backdrop-blur-sm border-2 border-primary/20 flex items-center justify-center p-4 transition-all duration-300 group-hover:scale-105 group-hover:border-primary/40 mb-3">
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-2xl bg-gradient-to-br from-primary/10 to-secondary/10 backdrop-blur-sm border-2 border-primary/20 flex items-center justify-center px-4 py-2 transition-all duration-300 group-hover:scale-105 group-hover:border-primary/40 mb-3">
                   <img 
                     src={inspire2GrowLogo} 
                     alt="Inspire2Grow Logo" 
@@ -53,7 +53,7 @@ export default function CareerGuidance() {
               </div>
 
               <div className="flex flex-col items-center group">
-                <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-2xl bg-gradient-to-br from-secondary/10 to-accent/10 backdrop-blur-sm border-2 border-secondary/20 flex items-center justify-center p-4 transition-all duration-300 group-hover:scale-105 group-hover:border-secondary/40 mb-3">
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-2xl bg-gradient-to-br from-secondary/10 to-accent/10 backdrop-blur-sm border-2 border-secondary/20 flex items-center justify-center px-4 py-2 transition-all duration-300 group-hover:scale-105 group-hover:border-secondary/40 mb-3">
                   <img 
                     src={mentoriaLogo} 
                     alt="Mentoria Logo" 
