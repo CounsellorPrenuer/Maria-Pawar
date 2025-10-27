@@ -58,7 +58,7 @@ export default function CareerGuidance() {
                     src={mentoriaLogo} 
                     alt="Mentoria Logo" 
                     className="w-full h-full object-contain"
-                    style={{ filter: 'invert(1) hue-rotate(180deg) brightness(1.1)' }}
+                    style={{ filter: 'invert(1) hue-rotate(180deg) saturate(2.5) contrast(1.3) brightness(0.95)' }}
                   />
                 </div>
                 <p className="text-sm font-semibold text-muted-foreground">Mentoria</p>
