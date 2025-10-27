@@ -4,7 +4,7 @@ import StatsCard from "@/components/StatsCard";
 import GlassCard from "@/components/GlassCard";
 import AnimatedSection from "@/components/AnimatedSection";
 import inspire2GrowLogo from "@assets/logo_1759744643906.png";
-import mentoriaLogo from "@assets/white mentoria logo_1760615947881.png";
+import mentoriaLogo from "@assets/download_1761556078379.png";
 
 export default function CareerGuidance() {
   const timelineSteps = [
