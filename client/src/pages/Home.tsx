@@ -1,12 +1,21 @@
-import { Link } from "wouter";
+import { useState } from "react";
+import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import GlassCard from "@/components/GlassCard";
 import AnimatedSection from "@/components/AnimatedSection";
 import FloatingElements from "@/components/FloatingElements";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import profileImg from "@assets/profile_1759744643907.png";
-import { GraduationCap, Users, Plane, Mail, Phone, MapPin, Sparkles, TrendingUp, Award, ArrowRight } from "lucide-react";
+import { GraduationCap, Users, Plane, Mail, Phone, MapPin, Sparkles, TrendingUp, Award, ArrowRight, Briefcase } from "lucide-react";
 
 export default function Home() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [, setLocation] = useLocation();
+
+  const handleServiceChoice = (path: string) => {
+    setIsModalOpen(false);
+    setLocation(path);
+  };
   const services = [
     {
       icon: GraduationCap,
@@ -81,19 +90,18 @@ export default function Home() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link href="/pricing">
-                  <Button
-                    size="lg"
-                    className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 px-8 group relative overflow-hidden w-full sm:w-auto"
-                    data-testid="button-explore-services"
-                  >
-                    <span className="relative z-10 flex items-center justify-center gap-2">
-                      Explore Services
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-white/20 to-accent/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-                  </Button>
-                </Link>
+                <Button
+                  size="lg"
+                  className="rounded-full bg-accent px-8 group relative overflow-hidden w-full sm:w-auto"
+                  data-testid="button-explore-services"
+                  onClick={() => setIsModalOpen(true)}
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    Explore Services
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-accent/0 via-white/20 to-accent/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                </Button>
                 <Link href="/contact">
                   <Button
                     size="lg"
@@ -239,6 +247,66 @@ export default function Home() {
           </AnimatedSection>
         </div>
       </div>
+
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-2xl border-0 bg-background/95 backdrop-blur-xl">
+          <DialogHeader className="text-center pb-2">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 mb-4 mx-auto">
+              <Sparkles className="w-8 h-8 text-accent" />
+            </div>
+            <DialogTitle className="font-serif text-3xl mb-2">Choose Your Path</DialogTitle>
+            <DialogDescription className="text-base text-muted-foreground">
+              Select the service that best fits your needs
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-6">
+            <div
+              onClick={() => handleServiceChoice("/career-guidance")}
+              className="group relative p-6 rounded-xl border-2 border-border bg-card hover-elevate active-elevate-2 cursor-pointer transition-all"
+              data-testid="button-choose-career-guidance"
+            >
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Briefcase className="w-7 h-7 text-primary" />
+                </div>
+                <h3 className="font-serif text-xl font-bold mb-2">
+                  Career Guidance
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Personalized career counseling and professional development strategies
+                </p>
+                <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                  <span>Explore Services</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+
+            <div
+              onClick={() => handleServiceChoice("/learning-development")}
+              className="group relative p-6 rounded-xl border-2 border-border bg-card hover-elevate active-elevate-2 cursor-pointer transition-all"
+              data-testid="button-choose-learning-development"
+            >
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="w-14 h-14 rounded-xl bg-secondary/10 flex items-center justify-center">
+                  <Users className="w-7 h-7 text-secondary" />
+                </div>
+                <h3 className="font-serif text-xl font-bold mb-2">
+                  Learning & Development
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Corporate training and organizational skill development programs
+                </p>
+                <div className="flex items-center gap-2 text-sm font-semibold text-secondary">
+                  <span>Explore Services</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
