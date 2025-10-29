@@ -199,7 +199,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 mb-12">
             {[
-              { icon: Mail, title: "Email", value: "2inspire2grow@gmail.com", href: "mailto:2inspire2grow@gmail.com", testId: "link-home-email" },
+              { icon: Mail, title: "Email", value: "2inspires2grow@gmail.com", href: "mailto:2inspires2grow@gmail.com", testId: "link-home-email" },
               { icon: Phone, title: "Phone", value: "+91 86000 45797", href: "tel:+918600045797", testId: "link-home-phone" },
               { icon: MapPin, title: "Global Reach", value: "Serving 130 countries", href: null, testId: null },
             ].map((contact, index) => (

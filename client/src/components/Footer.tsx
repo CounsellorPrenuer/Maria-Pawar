@@ -17,12 +17,12 @@ export default function Footer() {
             <h4 className="font-semibold mb-4">Contact</h4>
             <div className="space-y-2">
               <a
-                href="mailto:2inspire2grow@gmail.com"
+                href="mailto:2inspires2grow@gmail.com"
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-secondary transition-colors"
                 data-testid="link-email"
               >
                 <Mail className="w-4 h-4" />
-                2inspire2grow@gmail.com
+                2inspires2grow@gmail.com
               </a>
               <a
                 href="tel:+918600045797"
