@@ -12,10 +12,13 @@ export default function Gallery({ images, title }: GalleryProps) {
           <div
             key={index}
             className="aspect-square rounded-xl overflow-hidden hover:scale-105 transition-transform duration-300"
+            data-testid={`gallery-image-${index}`}
           >
-            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-              <span className="text-muted-foreground text-sm">Image {index + 1}</span>
-            </div>
+            <img 
+              src={image} 
+              alt={`Training in action ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
           </div>
         ))}
       </div>

@@ -3,9 +3,18 @@ import PartnerLogos from "@/components/PartnerLogos";
 import GlassCard from "@/components/GlassCard";
 import AnimatedSection from "@/components/AnimatedSection";
 import { Video } from "lucide-react";
+import image1 from "@assets/1_1761822725337.jfif";
+import image2 from "@assets/2_1761822725341.jfif";
+import image3 from "@assets/3_1761822725342.jfif";
+import image4 from "@assets/4_1761822725343.jfif";
+import image5 from "@assets/5_1761822725344.jfif";
+import image6 from "@assets/6_1761822725344.jfif";
+import image7 from "@assets/7_1761822725345.jfif";
+import image8 from "@assets/8_1761822725345.jfif";
+import image9 from "@assets/9_1761822725346.jfif";
 
 export default function OurImpact() {
-  const trainingImages = Array(9).fill("placeholder");
+  const trainingImages = [image1, image2, image3, image4, image5, image6, image7, image8, image9];
   const partnerLogos = Array(8).fill("placeholder");
 
   return (
