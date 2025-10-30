@@ -12,10 +12,37 @@ import image6 from "@assets/6_1761822725344.jfif";
 import image7 from "@assets/7_1761822725345.jfif";
 import image8 from "@assets/8_1761822725345.jfif";
 import image9 from "@assets/9_1761822725346.jfif";
+import rotaryLogo from "@assets/293-2931074_rotary-club-new-logo_1761824814806.png";
+import qatarAirwaysLogo from "@assets/1200px-Qatar_Airways_Logo_1761824814807.png";
+import airIndiaExpressLogo from "@assets/Air_India_Express_logo.svg_1761824814808.png";
+import aptechLogo from "@assets/Aptech-1024x271_1761824814809.png";
+import emiratesLogo from "@assets/Emirates_logo.svg_1761824814810.png";
+import faureciaLogo from "@assets/Faurecia_logo-RVB_1761824814810.jpg";
+import forceMotorsLogo from "@assets/Force_Motors_Logo.svg_1761824814811.png";
+import hpLogo from "@assets/Hindustan-Petroleum-Logo-Transparent_1761824814811.png";
+import airIndiaLogo from "@assets/kisspng-newark-liberty-international-airport-air-india-lim-ashwani-lohani-5b1d26850b7a93.253129951528637061047_1761824814812.jpg";
+import meaLogo from "@assets/Middle_East_Airlines-Logo.wine_1761824814813.png";
+import symbiosisLogo from "@assets/symbiosis international university_1761824814813.webp";
+import tajEduglobeLogo from "@assets/taj eduglobe_1761824814814.png";
+import tataLogo from "@assets/tata_1761824814815.png";
 
 export default function OurImpact() {
   const trainingImages = [image1, image2, image3, image4, image5, image6, image7, image8, image9];
-  const partnerLogos = Array(8).fill("placeholder");
+  const partnerLogos = [
+    rotaryLogo,
+    qatarAirwaysLogo,
+    airIndiaExpressLogo,
+    aptechLogo,
+    emiratesLogo,
+    faureciaLogo,
+    forceMotorsLogo,
+    hpLogo,
+    airIndiaLogo,
+    meaLogo,
+    symbiosisLogo,
+    tajEduglobeLogo,
+    tataLogo
+  ];
 
   return (
     <div className="h-full bg-gradient-to-br from-primary/10 to-secondary/10">
