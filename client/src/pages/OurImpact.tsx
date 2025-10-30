@@ -40,27 +40,22 @@ export default function OurImpact() {
               </p>
             </AnimatedSection>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {[
                 { id: "wtwPXcSkYTg", title: "Video 1" },
                 { id: "wBAjeHvhWiw", title: "Video 2" },
                 { id: "ymXZ3i_gWJQ", title: "Video 3" },
               ].map((video, index) => (
                 <AnimatedSection key={index} animation="zoom-in" delay={index * 100}>
-                  <div className="relative group">
-                    <div className="absolute -inset-1 bg-gradient-to-br from-accent/20 to-primary/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-50"></div>
-                    <GlassCard hover className="relative overflow-hidden">
-                      <div className="aspect-video w-full">
-                        <iframe
-                          className="w-full h-full rounded-xl"
-                          src={`https://www.youtube.com/embed/${video.id}`}
-                          title={video.title}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          data-testid={`video-${index}`}
-                        ></iframe>
-                      </div>
-                    </GlassCard>
+                  <div className="aspect-video w-full">
+                    <iframe
+                      className="w-full h-full rounded-xl"
+                      src={`https://www.youtube.com/embed/${video.id}`}
+                      title={video.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      data-testid={`video-${index}`}
+                    ></iframe>
                   </div>
                 </AnimatedSection>
               ))}
