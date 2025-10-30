@@ -81,9 +81,14 @@ export default function Home() {
                 Maria Pawar
               </h1>
               
-              <p className="text-xl sm:text-2xl lg:text-3xl text-secondary font-semibold mb-6 flex items-center justify-center lg:justify-start gap-2" data-testid="text-title">
+              <p className="text-xl sm:text-2xl lg:text-3xl text-secondary font-semibold mb-4 flex items-center justify-center lg:justify-start gap-2" data-testid="text-title">
                 <span>Founder, Inspire2Grow</span>
               </p>
+              
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-6 backdrop-blur-sm">
+                <Award className="w-4 h-4 text-primary" />
+                <span className="text-sm font-semibold text-primary" data-testid="text-credentials">MBA in HR and Training • Certified Career Counsellor</span>
+              </div>
               
               <p className="text-base sm:text-lg text-muted-foreground mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0" data-testid="text-bio">
                 With over <span className="text-accent font-semibold">24 years</span> of global experience across <span className="text-secondary font-semibold">130 countries</span>, I've empowered <span className="text-primary font-semibold">36,000+</span> individuals and organizations to unlock their full potential. Through Inspire2Grow, I combine cutting-edge psychometric assessments with personalized career counseling and world-class corporate training.
