@@ -6,7 +6,7 @@ import AnimatedSection from "@/components/AnimatedSection";
 import FloatingElements from "@/components/FloatingElements";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import profileImg from "@assets/profile_1759744643907.png";
-import { GraduationCap, Users, Plane, Mail, Phone, MapPin, Sparkles, TrendingUp, Award, ArrowRight, Briefcase } from "lucide-react";
+import { GraduationCap, Users, Plane, Mail, Phone, MapPin, Sparkles, TrendingUp, Award, ArrowRight, Briefcase, Video } from "lucide-react";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -180,6 +180,53 @@ export default function Home() {
                     </div>
                   </div>
                 </Link>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* YouTube Videos Section */}
+      <div className="relative py-16 sm:py-20 lg:py-32">
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <AnimatedSection animation="fade-up" className="text-center mb-12 sm:mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-4 backdrop-blur-sm">
+              <Video className="w-4 h-4 text-accent" />
+              <span className="text-sm font-semibold text-accent">Featured Content</span>
+            </div>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">Watch & Learn</h2>
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
+              Explore insights and expertise through our featured videos
+            </p>
+          </AnimatedSection>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {[
+              { id: "wtwPXcSkYTg", title: "Video 1" },
+              { id: "wBAjeHvhWiw", title: "Video 2" },
+              { id: "ymXZ3i_gWJQ", title: "Video 3" },
+            ].map((video, index) => (
+              <AnimatedSection key={index} animation="zoom-in" delay={index * 100}>
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-gradient-to-br from-accent/20 to-primary/20 rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-50"></div>
+                  <GlassCard hover className="relative overflow-hidden">
+                    <div className="aspect-video w-full">
+                      <iframe
+                        className="w-full h-full rounded-xl"
+                        src={`https://www.youtube.com/embed/${video.id}`}
+                        title={video.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        data-testid={`video-${index}`}
+                      ></iframe>
+                    </div>
+                  </GlassCard>
+                </div>
               </AnimatedSection>
             ))}
           </div>
