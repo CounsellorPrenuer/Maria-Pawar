@@ -19,8 +19,8 @@ export default function Blog() {
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="bg-gradient-to-br from-primary/10 to-secondary/10 py-20">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-secondary/10">
+      <div className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h1 className="font-serif text-4xl lg:text-5xl font-bold mb-6">Insights & Articles</h1>
