@@ -76,7 +76,7 @@ export default function OurImpact() {
                 Public Programs & Corporate Events
               </h2>
               <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
-                Experience transformative learning through our open enrollment programs and customized corporate training
+                Experience transformative learning through our open enrollment programs and professionally hosted corporate events
               </p>
             </AnimatedSection>
 
@@ -134,29 +134,29 @@ export default function OurImpact() {
                   </div>
                   
                   <p className="text-muted-foreground mb-6">
-                    Transform your organization with customized training programs designed specifically for your team's needs and challenges.
+                    Host impactful corporate events that engage, inspire, and energize your team with professionally curated experiences.
                   </p>
 
                   <div className="space-y-4 mb-6">
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
                       <div>
-                        <p className="font-medium">Customized Curriculum</p>
-                        <p className="text-sm text-muted-foreground">Tailored content aligned with your organizational goals</p>
+                        <p className="font-medium">Custom Event Design</p>
+                        <p className="text-sm text-muted-foreground">Tailored events aligned with your organizational culture</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
                       <div>
-                        <p className="font-medium">On-Site or Virtual</p>
-                        <p className="text-sm text-muted-foreground">Flexible delivery modes to suit your requirements</p>
+                        <p className="font-medium">Professional Facilitation</p>
+                        <p className="text-sm text-muted-foreground">Expert hosting for team building and leadership events</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
                       <div>
-                        <p className="font-medium">Experiential Learning</p>
-                        <p className="text-sm text-muted-foreground">Interactive workshops with practical application</p>
+                        <p className="font-medium">Engaging Experiences</p>
+                        <p className="text-sm text-muted-foreground">Interactive sessions that create lasting impact</p>
                       </div>
                     </div>
                   </div>
@@ -167,7 +167,7 @@ export default function OurImpact() {
                       className="w-full"
                       data-testid="button-request-corporate"
                     >
-                      Request Corporate Training
+                      Host Your Corporate Event
                     </Button>
                   </Link>
                 </GlassCard>
