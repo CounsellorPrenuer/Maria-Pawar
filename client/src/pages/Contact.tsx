@@ -17,7 +17,7 @@ export default function Contact() {
   };
 
   return (
-    <div className="h-full relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden">
       <FloatingElements />
       <div className="absolute inset-0 gradient-mesh"></div>
       <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/80"></div>
