@@ -137,6 +137,8 @@ export default function ContactForm() {
                     <SelectItem value="Career Guidance" data-testid="option-service-career-guidance">Career Guidance</SelectItem>
                     <SelectItem value="Learning & Development" data-testid="option-service-learning-development">Learning & Development</SelectItem>
                     <SelectItem value="Aviation" data-testid="option-service-aviation">Aviation</SelectItem>
+                    <SelectItem value="Public Programs" data-testid="option-service-public-programs">Public Programs</SelectItem>
+                    <SelectItem value="Host Corporate Events" data-testid="option-service-corporate-events">Host Corporate Events</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />

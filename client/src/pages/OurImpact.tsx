@@ -111,13 +111,13 @@ export default function OurImpact() {
                     ))}
                   </div>
 
-                  <Link href="/pricing">
+                  <Link href="/contact">
                     <Button 
                       variant="default" 
                       className="w-full bg-secondary text-secondary-foreground hover:bg-secondary/90"
                       data-testid="button-view-programs"
                     >
-                      View Programs & Register
+                      Get More Details
                     </Button>
                   </Link>
                 </GlassCard>
