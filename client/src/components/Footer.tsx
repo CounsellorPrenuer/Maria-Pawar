@@ -69,8 +69,9 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-8 pt-8 border-t border-border text-center text-sm text-muted-foreground">
+        <div className="mt-8 pt-8 border-t border-border text-center text-sm text-muted-foreground space-y-2">
           <p>&copy; {new Date().getFullYear()} Inspire2Grow. All rights reserved.</p>
+          <p className="text-xs">In partnership with Mentoria for enhanced career guidance services.</p>
         </div>
       </div>
     </footer>
