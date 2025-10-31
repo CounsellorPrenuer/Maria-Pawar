@@ -69,7 +69,7 @@ export default function LearningDevelopment() {
   ];
 
   return (
-    <div className="flex-1 gradient-mesh">
+    <div className="h-full gradient-mesh">
       {/* Hero Section */}
       <div className="relative py-20 sm:py-28 lg:py-32">
         <div className="absolute inset-0 bg-gradient-to-b from-background/95 via-background/80 to-background/95 backdrop-blur-3xl"></div>

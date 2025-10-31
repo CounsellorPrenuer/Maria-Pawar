@@ -19,7 +19,7 @@ export default function Pricing() {
   };
 
   return (
-    <div className="flex-1 relative overflow-hidden">
+    <div className="h-full relative overflow-hidden">
       <FloatingElements />
       <div className="absolute inset-0 gradient-mesh"></div>
       <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/50 to-background/80"></div>
