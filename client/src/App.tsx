@@ -10,6 +10,7 @@ import CareerGuidance from "@/pages/CareerGuidance";
 import LearningDevelopment from "@/pages/LearningDevelopment";
 import Aviation from "@/pages/Aviation";
 import OurImpact from "@/pages/OurImpact";
+import Testimonials from "@/pages/Testimonials";
 import Pricing from "@/pages/Pricing";
 import Blog from "@/pages/Blog";
 import BlogPost from "@/pages/BlogPost";
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/learning-development" component={LearningDevelopment} />
       <Route path="/aviation" component={Aviation} />
       <Route path="/our-impact" component={OurImpact} />
+      <Route path="/testimonials" component={Testimonials} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/blog" component={Blog} />
       <Route path="/blog/:slug" component={BlogPost} />

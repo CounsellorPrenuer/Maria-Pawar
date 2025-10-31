@@ -23,6 +23,7 @@ export default function Navbar() {
     { path: "/learning-development", label: "Learning & Development" },
     { path: "/aviation", label: "Aviation" },
     { path: "/our-impact", label: "Our Impact" },
+    { path: "/testimonials", label: "Testimonials" },
     { path: "/pricing", label: "Pricing" },
     { path: "/blog", label: "Blog" },
   ];
