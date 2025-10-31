@@ -47,7 +47,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen overflow-hidden">
+    <div className="flex-1 overflow-hidden">
       {/* Hero Section with About Me */}
       <div className="relative min-h-[90vh] flex items-center">
         <FloatingElements />
