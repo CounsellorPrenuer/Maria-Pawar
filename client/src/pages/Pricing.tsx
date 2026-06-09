@@ -27,7 +27,7 @@ export default function Pricing() {
   const standardPlans = cms.data?.standardPlans ?? [];
   const customPlans = cms.data?.customPlans ?? [];
   const isLoading = cms.isLoading;
-  const hasError = cms.isError;
+  const hasError = cms.isError && standardPlans.length === 0 && customPlans.length === 0;
 
   return (
     <div className="h-full relative overflow-hidden">

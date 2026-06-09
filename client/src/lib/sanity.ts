@@ -1,8 +1,9 @@
 import imageUrlBuilder from "@sanity/image-url";
+import { workerPost } from "./workerApi";
+import { CMS_FALLBACK } from "./cmsFallback";
 
 const SANITY_PROJECT_ID = "zd6zrruu";
 const SANITY_DATASET = "production";
-const SANITY_API_VERSION = "2026-06-01";
 
 const builder = imageUrlBuilder({ projectId: SANITY_PROJECT_ID, dataset: SANITY_DATASET });
 
@@ -74,34 +75,19 @@ export type CmsContent = {
   services: Service[];
 };
 
-const CMS_QUERY = `{
-  "standardPlans": *[_type == "standardPlan"] | order(order asc){_id,planId,title,subgroup,price,features,image,order},
-  "customPlans": *[_type == "customPlan"] | order(order asc){_id,planId,title,price,description,image,order},
-  "blogPosts": *[_type == "blogPost"] | order(publishedAt desc){_id,title,"slug":slug.current,excerpt,author,publishedAt,featured,image,body},
-  "services": *[_type == "services"] | order(order asc){_id,title,description,link,image,order},
-  "testimonials": *[_type == "testimonials"] | order(order asc){_id,name,role,quote,rating,image}
-}`;
-
 let cmsRequest: Promise<CmsContent> | null = null;
 
-async function querySanity<T>(query: string): Promise<T> {
-  const url = `https://${SANITY_PROJECT_ID}.apicdn.sanity.io/v${SANITY_API_VERSION}/data/query/${SANITY_DATASET}?query=${encodeURIComponent(query)}`;
-  const controller = new AbortController();
-  const timeout = window.setTimeout(() => controller.abort(), 20_000);
+async function loadCms(): Promise<CmsContent> {
   try {
-    const response = await fetch(url, { signal: controller.signal, headers: { Accept: "application/json" } });
-    if (!response.ok) throw new Error(`Sanity request failed (${response.status})`);
-    const payload = await response.json() as { result?: T };
-    if (!payload.result) throw new Error("Sanity returned an empty result");
-    return payload.result;
-  } finally {
-    window.clearTimeout(timeout);
+    return await workerPost<CmsContent>("/api/cms/bootstrap", {});
+  } catch {
+    return CMS_FALLBACK;
   }
 }
 
 export function fetchCms() {
   if (!cmsRequest) {
-    cmsRequest = querySanity<CmsContent>(CMS_QUERY).catch((error) => {
+    cmsRequest = loadCms().catch((error) => {
       cmsRequest = null;
       throw error;
     });
