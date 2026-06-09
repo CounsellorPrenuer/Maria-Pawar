@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import GlassCard from "@/components/GlassCard";
@@ -7,6 +8,7 @@ import FloatingElements from "@/components/FloatingElements";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import profileImg from "@assets/profile_1759744643907.png";
 import { GraduationCap, Users, Plane, Mail, Phone, MapPin, Sparkles, TrendingUp, Award, ArrowRight, Briefcase } from "lucide-react";
+import { fetchCms, imageUrl, type SanityImage, type Service } from "@/lib/sanity";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,7 +18,7 @@ export default function Home() {
     setIsModalOpen(false);
     setLocation(path);
   };
-  const services = [
+  const fallbackServices = [
     {
       icon: GraduationCap,
       title: "Career Guidance",
@@ -39,6 +41,25 @@ export default function Home() {
       color: "from-purple-500/10 to-pink-500/10",
     },
   ];
+  const { data: cmsServices = [] } = useQuery({
+    queryKey: ["sanity", "services"],
+    queryFn: async () => (await fetchCms()).services as Service[],
+  });
+  const serviceIcons = [GraduationCap, Users, Plane];
+  const services: Array<{
+    title: string;
+    description: string;
+    link: string;
+    image?: SanityImage;
+    icon: typeof GraduationCap;
+    color: string;
+  }> = cmsServices.length
+    ? cmsServices.map((service, index) => ({
+        ...service,
+        icon: serviceIcons[index % serviceIcons.length],
+        color: ["from-blue-500/10 to-cyan-500/10", "from-green-500/10 to-emerald-500/10", "from-purple-500/10 to-pink-500/10"][index % 3],
+      }))
+    : fallbackServices;
 
   const stats = [
     { icon: Award, value: "24+", label: "Years Experience", color: "text-accent" },
@@ -166,6 +187,13 @@ export default function Home() {
                       <div className={`absolute -inset-1 bg-gradient-to-br ${service.color} rounded-3xl blur-xl group-hover:blur-2xl transition-all duration-500 opacity-50 group-hover:opacity-75`}></div>
                       <GlassCard hover className="relative h-full flex flex-col">
                         <div className="text-center flex-1 flex flex-col">
+                          {service.image && (
+                            <img
+                              src={imageUrl(service.image, 700)}
+                              alt={service.image.alt || service.title}
+                              className="w-full h-40 object-cover rounded-2xl mb-6"
+                            />
+                          )}
                           <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-secondary/20 to-primary/20 mb-6 mx-auto group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                             <service.icon className="w-8 h-8 sm:w-10 sm:h-10 text-secondary" />
                           </div>

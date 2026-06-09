@@ -1,201 +1,161 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { CONTACT_EMAIL } from "@/lib/config";
+import { formatCurrency } from "@/lib/currency";
+import { workerPost } from "@/lib/workerApi";
+import { CheckCircle2, Loader2, Mail } from "lucide-react";
 
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay?: new (options: Record<string, unknown>) => { open: () => void };
   }
 }
 
-const bookingFormSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email"),
-  phone: z.string().regex(/^[0-9]{10}$/, "Please enter a valid 10-digit phone number"),
-});
-
-type BookingFormData = z.infer<typeof bookingFormSchema>;
-
-interface BookingModalProps {
+type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  serviceName: string;
+  planId: string;
+  title: string;
   category: string;
   price: number;
+};
+
+type CouponResult = {
+  valid: boolean;
+  discount_amount?: number;
+  discountAmount?: number;
+  final_amount?: number;
+  finalAmount?: number;
+  message?: string;
+};
+
+type OrderResult = {
+  key_id: string;
+  order_id: string;
+  amount: number;
+  currency: string;
+  lead_id: string;
+  final_amount: number;
+};
+
+function loadRazorpay() {
+  return new Promise<boolean>((resolve) => {
+    if (window.Razorpay) return resolve(true);
+    const existing = document.querySelector<HTMLScriptElement>('script[src*="checkout.razorpay.com"]');
+    if (existing) {
+      existing.addEventListener("load", () => resolve(true), { once: true });
+      existing.addEventListener("error", () => resolve(false), { once: true });
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
 }
 
-export default function BookingModal({ open, onOpenChange, serviceName, category, price }: BookingModalProps) {
+export default function BookingModal({ open, onOpenChange, planId, title, category, price }: Props) {
   const { toast } = useToast();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [coupon, setCoupon] = useState("");
+  const [couponMessage, setCouponMessage] = useState("");
+  const [finalAmount, setFinalAmount] = useState(price);
+  const [isApplying, setIsApplying] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const form = useForm<BookingFormData>({
-    resolver: zodResolver(bookingFormSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-    },
-  });
-
-  const createBookingMutation = useMutation({
-    mutationFn: async (data: any) => {
-      return apiRequest("POST", "/api/bookings", data);
-    },
-  });
-
-  const loadRazorpayScript = () => {
-    return new Promise((resolve) => {
-      if (window.Razorpay) {
-        resolve(true);
-        return;
-      }
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
+  const openMailDraft = () => {
+    const subject = encodeURIComponent(`Mentoria booking enquiry: ${title}`);
+    const body = encodeURIComponent(
+      `Hello Maria,\n\nI would like to book ${title} (${category}) for ${formatCurrency(finalAmount)}.\n\nName: ${name}\nEmail: ${email}\nPhone: ${phone}\nPlan ID: ${planId}\nCoupon: ${coupon || "None"}\n`,
+    );
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
   };
 
-  const handlePayment = async (bookingId: string, userData: BookingFormData) => {
-    setIsProcessing(true);
-
+  const applyCoupon = async () => {
+    if (!coupon.trim()) {
+      setCouponMessage("Enter a coupon code.");
+      return;
+    }
+    setIsApplying(true);
     try {
-      const scriptLoaded = await loadRazorpayScript();
-      
-      if (!scriptLoaded) {
-        toast({
-          title: "Error",
-          description: "Failed to load payment gateway. Please try again.",
-          variant: "destructive",
-        });
-        setIsProcessing(false);
-        return;
-      }
-
-      // Create Razorpay order
-      const orderResponse = await fetch("/api/razorpay/create-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: price,
-          bookingId,
-        }),
+      const result = await workerPost<CouponResult>("/api/coupons/preview", {
+        code: coupon.trim().toUpperCase(),
+        plan_id: planId,
       });
+      const discount = Number(result.discountAmount ?? result.discount_amount ?? 0);
+      const total = Number(result.finalAmount ?? result.final_amount ?? Math.max(0, price - discount));
+      setFinalAmount(result.valid ? total : price);
+      setCouponMessage(result.message || (result.valid ? `Coupon applied. You save ${formatCurrency(discount)}.` : "Coupon is invalid or inactive."));
+    } catch (error) {
+      setFinalAmount(price);
+      setCouponMessage(error instanceof Error ? error.message : "Could not validate coupon.");
+    } finally {
+      setIsApplying(false);
+    }
+  };
 
-      const orderData = await orderResponse.json();
-
-      if (!orderData.success) {
-        throw new Error("Failed to create payment order");
+  const pay = async () => {
+    if (name.trim().length < 2 || !email.includes("@") || !/^\+?[0-9\s-]{10,15}$/.test(phone)) {
+      toast({ title: "Check your details", description: "Enter a valid name, email, and phone number.", variant: "destructive" });
+      return;
+    }
+    setIsProcessing(true);
+    try {
+      if (!(await loadRazorpay()) || !window.Razorpay) {
+        throw new Error("Razorpay could not load on this browser.");
       }
+      const order = await workerPost<OrderResult>("/api/payments/create-order", {
+        plan_id: planId,
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        coupon_code: coupon.trim().toUpperCase() || undefined,
+      });
+      setFinalAmount(order.final_amount);
 
-      const options = {
-        key: orderData.key_id,
-        amount: orderData.order.amount,
-        currency: orderData.order.currency,
+      const checkout = new window.Razorpay({
+        key: order.key_id,
+        amount: order.amount,
+        currency: order.currency,
         name: "Inspire2Grow",
-        description: serviceName,
-        order_id: orderData.order.id,
-        handler: async function (response: any) {
+        description: title,
+        order_id: order.order_id,
+        prefill: { name, email, contact: phone },
+        theme: { color: "#e7a923" },
+        handler: async (response: Record<string, string>) => {
           try {
-            // Verify payment
-            const verifyResponse = await fetch("/api/razorpay/verify-payment", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                bookingId,
-              }),
+            await workerPost("/api/payments/verify", {
+              plan_id: planId,
+              lead_id: order.lead_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
             });
-
-            const verifyData = await verifyResponse.json();
-
-            if (verifyData.success) {
-              toast({
-                title: "Success!",
-                description: "Payment completed successfully. We'll contact you soon!",
-              });
-              queryClient.invalidateQueries({ queryKey: ["/api/bookings"] });
-              onOpenChange(false);
-              form.reset();
-            } else {
-              toast({
-                title: "Payment Verification Failed",
-                description: "Please contact support with your payment ID.",
-                variant: "destructive",
-              });
-            }
+            toast({ title: "Payment verified", description: "Thank you. We’ll contact you shortly." });
+            onOpenChange(false);
           } catch (error) {
-            toast({
-              title: "Error",
-              description: "Payment verification failed. Please contact support.",
-              variant: "destructive",
-            });
+            toast({ title: "Verification failed", description: error instanceof Error ? error.message : "Please contact us.", variant: "destructive" });
           } finally {
             setIsProcessing(false);
           }
         },
-        prefill: {
-          name: userData.name,
-          email: userData.email,
-          contact: userData.phone,
-        },
-        theme: {
-          color: "#FFC107",
-        },
         modal: {
-          ondismiss: function() {
-            setIsProcessing(false);
-            toast({
-              title: "Payment Cancelled",
-              description: "You cancelled the payment. Your booking is saved as pending.",
-            });
-          }
-        }
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (error: any) {
-      console.error("Payment error:", error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to process payment. Please try again.",
-        variant: "destructive",
+          ondismiss: () => setIsProcessing(false),
+        },
       });
+      checkout.open();
+    } catch (error) {
       setIsProcessing(false);
-    }
-  };
-
-  const onSubmit = async (data: BookingFormData) => {
-    try {
-      const bookingData = {
-        ...data,
-        category,
-        serviceName,
-        price,
-        paymentStatus: "pending",
-      };
-
-      const booking = await createBookingMutation.mutateAsync(bookingData);
-      
-      // Proceed to payment
-      await handlePayment(booking.id, data);
-    } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to create booking. Please try again.",
+        title: "Checkout unavailable",
+        description: error instanceof Error ? `${error.message} You can send us a pre-filled email instead.` : "Please use the email fallback.",
         variant: "destructive",
       });
     }
@@ -203,116 +163,38 @@ export default function BookingModal({ open, onOpenChange, serviceName, category
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]" data-testid="dialog-booking">
+      <DialogContent className="sm:max-w-lg max-h-[92vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-serif">Complete Your Booking</DialogTitle>
-          <DialogDescription>
-            Enter your details to proceed with the payment for {serviceName}
-          </DialogDescription>
+          <DialogTitle className="font-serif text-2xl">Complete Your Booking</DialogTitle>
+          <DialogDescription>Enter your details, apply a coupon, then continue to secure Razorpay checkout.</DialogDescription>
         </DialogHeader>
-
-        <div className="my-4 p-4 rounded-lg bg-primary/5 border border-primary/10">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-muted-foreground">Service:</span>
-            <span className="font-semibold">{serviceName}</span>
-          </div>
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-muted-foreground">Category:</span>
-            <span className="font-semibold">{category}</span>
-          </div>
-          <div className="flex justify-between items-center pt-2 border-t border-primary/10">
-            <span className="text-sm text-muted-foreground">Amount:</span>
-            <span className="text-2xl font-bold text-accent">₹{price.toLocaleString()}</span>
-          </div>
+        <div className="rounded-2xl bg-primary/5 border border-primary/10 p-4 space-y-2">
+          <div className="flex justify-between gap-4"><span className="text-muted-foreground">Plan</span><strong className="text-right">{title}</strong></div>
+          <div className="flex justify-between gap-4"><span className="text-muted-foreground">Category</span><span className="text-right">{category}</span></div>
+          <div className="flex justify-between gap-4 pt-2 border-t"><span>Amount</span><strong className="text-xl text-accent">{formatCurrency(finalAmount)}</strong></div>
         </div>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="Enter your full name" 
-                      {...field} 
-                      data-testid="input-booking-name"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email Address</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="email" 
-                      placeholder="your.email@example.com" 
-                      {...field} 
-                      data-testid="input-booking-email"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone Number</FormLabel>
-                  <FormControl>
-                    <Input 
-                      type="tel" 
-                      placeholder="9876543210" 
-                      {...field} 
-                      data-testid="input-booking-phone"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                className="flex-1"
-                disabled={isProcessing}
-                data-testid="button-booking-cancel"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90"
-                disabled={isProcessing || createBookingMutation.isPending}
-                data-testid="button-booking-submit"
-              >
-                {isProcessing || createBookingMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  `Pay ₹${price.toLocaleString()}`
-                )}
+        <div className="grid gap-4">
+          <div><Label htmlFor="checkout-name">Full name</Label><Input id="checkout-name" value={name} onChange={(event) => setName(event.target.value)} /></div>
+          <div><Label htmlFor="checkout-email">Email</Label><Input id="checkout-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} /></div>
+          <div><Label htmlFor="checkout-phone">Phone</Label><Input id="checkout-phone" type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} /></div>
+          <div>
+            <Label htmlFor="checkout-coupon">Coupon code</Label>
+            <div className="flex gap-2">
+              <Input id="checkout-coupon" value={coupon} onChange={(event) => setCoupon(event.target.value.toUpperCase())} placeholder="DEEPA10" />
+              <Button type="button" variant="outline" onClick={applyCoupon} disabled={isApplying}>
+                {isApplying ? <Loader2 className="w-4 h-4 animate-spin" /> : "Apply"}
               </Button>
             </div>
-          </form>
-        </Form>
+            {couponMessage && <p className="text-sm mt-2 flex gap-2 items-start"><CheckCircle2 className="w-4 h-4 mt-0.5 text-secondary" />{couponMessage}</p>}
+          </div>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3 pt-2">
+          <Button variant="outline" onClick={openMailDraft}><Mail className="w-4 h-4 mr-2" />Email Instead</Button>
+          <Button onClick={pay} disabled={isProcessing}>
+            {isProcessing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : null}
+            Pay {formatCurrency(finalAmount)}
+          </Button>
+        </div>
       </DialogContent>
     </Dialog>
   );

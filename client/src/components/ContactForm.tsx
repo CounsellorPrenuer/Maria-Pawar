@@ -8,9 +8,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mail } from "lucide-react";
+import { workerPost } from "@/lib/workerApi";
+import { CONTACT_EMAIL } from "@/lib/config";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -38,14 +39,16 @@ export default function ContactForm() {
 
   const createContactMutation = useMutation({
     mutationFn: async (data: ContactFormData) => {
-      return apiRequest("POST", "/api/contacts", data);
+      return workerPost("/api/forms/submit", {
+        ...data,
+        plan_id: `contact-${data.serviceType.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+      });
     },
     onSuccess: async () => {
       toast({
         title: "Message Sent!",
         description: "Thank you for contacting us. We'll get back to you soon!",
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/contacts"] });
       form.reset();
     },
     onError: (error: any) => {
@@ -59,6 +62,13 @@ export default function ContactForm() {
 
   const onSubmit = (data: ContactFormData) => {
     createContactMutation.mutate(data);
+  };
+
+  const openMailDraft = () => {
+    const values = form.getValues();
+    const subject = encodeURIComponent(`Website enquiry: ${values.serviceType || "Inspire2Grow services"}`);
+    const body = encodeURIComponent(`Name: ${values.name}\nEmail: ${values.email}\nPhone: ${values.phone}\nService: ${values.serviceType}\n\n${values.message || ""}`);
+    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`;
   };
 
   return (
@@ -165,21 +175,14 @@ export default function ContactForm() {
             )}
           />
 
-          <Button
-            type="submit"
-            className="w-full rounded-full bg-accent"
-            disabled={createContactMutation.isPending}
-            data-testid="button-contact-submit"
-          >
-            {createContactMutation.isPending ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Sending...
-              </>
-            ) : (
-              "Send Message"
-            )}
-          </Button>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Button type="button" variant="outline" className="rounded-full" onClick={openMailDraft}>
+              <Mail className="mr-2 h-4 w-4" /> Email Instead
+            </Button>
+            <Button type="submit" className="rounded-full bg-accent" disabled={createContactMutation.isPending} data-testid="button-contact-submit">
+              {createContactMutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Sending...</> : "Send Message"}
+            </Button>
+          </div>
         </form>
       </Form>
     </GlassCard>
