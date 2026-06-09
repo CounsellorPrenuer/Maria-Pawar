@@ -5,9 +5,10 @@ import AnimatedSection from "@/components/AnimatedSection";
 import { fetchCms, imageUrl, type Testimonial } from "@/lib/sanity";
 
 export default function Testimonials() {
-  const { data: testimonials = [], isLoading } = useQuery({
+  const { data: testimonials = [], isLoading, isError } = useQuery({
     queryKey: ["sanity", "testimonials"],
     queryFn: async () => (await fetchCms()).testimonials as Testimonial[],
+    retry: 2,
   });
 
   return (
@@ -17,7 +18,9 @@ export default function Testimonials() {
           <h1 className="font-serif text-4xl lg:text-5xl font-bold mb-6">What Our Clients Say</h1>
           <p className="text-xl text-muted-foreground">Real stories from people and organizations we’ve helped grow.</p>
         </AnimatedSection>
-        {isLoading ? <p className="text-center">Loading testimonials...</p> : (
+        {isLoading ? <p className="text-center">Loading testimonials...</p> : isError ? (
+          <p className="text-center text-destructive">Unable to load testimonials right now. Please refresh.</p>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
               <AnimatedSection key={testimonial._id} animation="zoom-in" delay={index * 50}>

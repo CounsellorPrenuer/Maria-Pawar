@@ -6,9 +6,10 @@ import { format } from "date-fns";
 import { fetchCms, imageUrl, type BlogPost } from "@/lib/sanity";
 
 export default function Blog() {
-  const { data: blogs = [], isLoading } = useQuery({
+  const { data: blogs = [], isLoading, isError } = useQuery({
     queryKey: ["sanity", "blogs"],
     queryFn: async () => (await fetchCms()).blogPosts as BlogPost[],
+    retry: 2,
   });
 
   return (
@@ -18,7 +19,9 @@ export default function Blog() {
           <h1 className="font-serif text-4xl lg:text-5xl font-bold mb-6">Insights & Articles</h1>
           <p className="text-xl text-muted-foreground">Expert perspectives on career development, leadership, and personal growth.</p>
         </div>
-        {isLoading ? <p className="text-center">Loading articles...</p> : (
+        {isLoading ? <p className="text-center">Loading articles...</p> : isError ? (
+          <p className="text-center text-destructive">Unable to load articles right now. Please refresh.</p>
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {blogs.map((post) => (
               <GlassCard key={post._id} hover className="flex flex-col h-full overflow-hidden p-0">
