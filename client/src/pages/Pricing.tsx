@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import PricingTabs from "@/components/PricingTabs";
 import CustomPlans from "@/components/CustomPlans";
 import BookingModal from "@/components/BookingModal";
 import AnimatedSection from "@/components/AnimatedSection";
 import FloatingElements from "@/components/FloatingElements";
 import { Sparkles } from "lucide-react";
-import { fetchCms } from "@/lib/sanity";
+import { useCms } from "@/hooks/useCms";
 
 type SelectedPlan = {
   planId: string;
@@ -17,17 +16,10 @@ type SelectedPlan = {
 
 export default function Pricing() {
   const [selectedPlan, setSelectedPlan] = useState<SelectedPlan | null>(null);
-  const cms = useQuery({
-    queryKey: ["sanity", "cms"],
-    queryFn: fetchCms,
-    staleTime: 60_000,
-    retry: 2,
-  });
+  const { data, isLoading } = useCms();
 
-  const standardPlans = cms.data?.standardPlans ?? [];
-  const customPlans = cms.data?.customPlans ?? [];
-  const isLoading = cms.isLoading;
-  const hasError = cms.isError && standardPlans.length === 0 && customPlans.length === 0;
+  const standardPlans = data?.standardPlans ?? [];
+  const customPlans = data?.customPlans ?? [];
 
   return (
     <div className="h-full relative overflow-hidden">
@@ -48,13 +40,9 @@ export default function Pricing() {
           </p>
         </AnimatedSection>
 
-        {isLoading && <p className="text-center py-16">Loading current plans...</p>}
-        {hasError && (
-          <p className="text-center py-16 text-destructive">
-            Pricing is temporarily unavailable. Please refresh or contact us.
-          </p>
-        )}
-        {!isLoading && !hasError && (
+        {isLoading ? (
+          <p className="text-center py-16">Loading current plans...</p>
+        ) : (
           <>
             <PricingTabs
               plans={standardPlans}

@@ -75,22 +75,28 @@ export type CmsContent = {
   services: Service[];
 };
 
+function withFallback(remote: Partial<CmsContent> | null | undefined): CmsContent {
+  return {
+    standardPlans: remote?.standardPlans?.length ? remote.standardPlans : CMS_FALLBACK.standardPlans,
+    customPlans: remote?.customPlans?.length ? remote.customPlans : CMS_FALLBACK.customPlans,
+    blogPosts: remote?.blogPosts?.length ? remote.blogPosts : CMS_FALLBACK.blogPosts,
+    testimonials: remote?.testimonials?.length ? remote.testimonials : CMS_FALLBACK.testimonials,
+    services: remote?.services?.length ? remote.services : CMS_FALLBACK.services,
+  };
+}
+
 let cmsRequest: Promise<CmsContent> | null = null;
 
 async function loadCms(): Promise<CmsContent> {
   try {
-    return await workerPost<CmsContent>("/api/cms/bootstrap", {});
+    const remote = await workerPost<Partial<CmsContent>>("/api/cms/bootstrap", {});
+    return withFallback(remote);
   } catch {
     return CMS_FALLBACK;
   }
 }
 
-export function fetchCms() {
-  if (!cmsRequest) {
-    cmsRequest = loadCms().catch((error) => {
-      cmsRequest = null;
-      throw error;
-    });
-  }
+export function fetchCms(): Promise<CmsContent> {
+  if (!cmsRequest) cmsRequest = loadCms();
   return cmsRequest;
 }

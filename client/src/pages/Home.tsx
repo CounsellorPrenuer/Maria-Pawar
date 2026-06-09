@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import GlassCard from "@/components/GlassCard";
@@ -8,7 +7,8 @@ import FloatingElements from "@/components/FloatingElements";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import profileImg from "@assets/profile_1759744643907.png";
 import { GraduationCap, Users, Plane, Mail, Phone, MapPin, Sparkles, TrendingUp, Award, ArrowRight, Briefcase } from "lucide-react";
-import { fetchCms, imageUrl, type SanityImage, type Service } from "@/lib/sanity";
+import { imageUrl, type SanityImage } from "@/lib/sanity";
+import { useCms } from "@/hooks/useCms";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,10 +41,8 @@ export default function Home() {
       color: "from-purple-500/10 to-pink-500/10",
     },
   ];
-  const { data: cmsServices = [] } = useQuery({
-    queryKey: ["sanity", "services"],
-    queryFn: async () => (await fetchCms()).services as Service[],
-  });
+  const { data: cms } = useCms();
+  const cmsServices = cms?.services ?? [];
   const serviceIcons = [GraduationCap, Users, Plane];
   const services: Array<{
     title: string;

@@ -122,6 +122,29 @@ async function hmac(secret: string, value: string) {
   return Array.from(new Uint8Array(signature)).map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
+const CMS_QUERY = `{
+  "standardPlans": *[_type == "standardPlan"] | order(order asc){_id,planId,title,subgroup,price,features,image,order},
+  "customPlans": *[_type == "customPlan"] | order(order asc){_id,planId,title,price,description,image,order},
+  "blogPosts": *[_type == "blogPost"] | order(publishedAt desc){_id,title,"slug":slug.current,excerpt,author,publishedAt,featured,image,body},
+  "services": *[_type == "services"] | order(order asc){_id,title,description,link,image,order},
+  "testimonials": *[_type == "testimonials"] | order(order asc){_id,name,role,quote,rating,image}
+}`;
+
+async function fetchSanityCms() {
+  const encoded = encodeURIComponent(CMS_QUERY);
+  const endpoints = [
+    `https://zd6zrruu.apicdn.sanity.io/v2026-06-01/data/query/production?query=${encoded}`,
+    `https://zd6zrruu.api.sanity.io/v2026-06-01/data/query/production?query=${encoded}`,
+  ];
+  for (const endpoint of endpoints) {
+    const sanityResponse = await fetch(endpoint, { headers: { Accept: "application/json" } });
+    if (!sanityResponse.ok) continue;
+    const sanityData = await sanityResponse.json<{ result?: unknown }>();
+    if (sanityData.result) return sanityData.result;
+  }
+  throw new Error("Sanity content is unavailable");
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const origin = allowedOrigin(request, env);
@@ -158,19 +181,7 @@ export default {
     try {
       if (url.pathname === "/api/cms/bootstrap") {
         if (projectId !== "mariapawar") return response({ error: "CMS is not configured for this project" }, 404, origin);
-        const query = `{
-          "standardPlans": *[_type == "standardPlan"] | order(order asc){_id,planId,title,subgroup,price,features,image,order},
-          "customPlans": *[_type == "customPlan"] | order(order asc){_id,planId,title,price,description,image,order},
-          "blogPosts": *[_type == "blogPost"] | order(publishedAt desc){_id,title,"slug":slug.current,excerpt,author,publishedAt,featured,image,body},
-          "services": *[_type == "services"] | order(order asc){_id,title,description,link,image,order},
-          "testimonials": *[_type == "testimonials"] | order(order asc){_id,name,role,quote,rating,image}
-        }`;
-        const sanityResponse = await fetch(
-          `https://zd6zrruu.apicdn.sanity.io/v2026-06-01/data/query/production?query=${encodeURIComponent(query)}`,
-        );
-        if (!sanityResponse.ok) throw new Error("Sanity content is unavailable");
-        const sanityData = await sanityResponse.json<{ result: unknown }>();
-        return response(sanityData.result, 200, origin);
+        return response(await fetchSanityCms(), 200, origin);
       }
 
       if (url.pathname === "/api/forms/submit") {

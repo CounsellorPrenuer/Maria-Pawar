@@ -1,4 +1,44 @@
-import type { CmsContent } from "./sanity";
+import type { BlogPost, CmsContent } from "./sanity";
+
+function block(text: string) {
+  return {
+    _type: "block",
+    _key: text.slice(0, 12),
+    style: "normal",
+    markDefs: [],
+    children: [{ _type: "span", _key: "span", text, marks: [] }],
+  };
+}
+
+const fallbackBlogPosts: BlogPost[] = [
+  {
+    _id: "fallback-blog-1",
+    title: "Finding Career Clarity in an AI-Driven World",
+    slug: "career-clarity-ai-driven-world",
+    excerpt: "A practical framework for making confident career choices while technology reshapes the world of work.",
+    author: "Maria Pawar",
+    publishedAt: "2026-06-01T09:00:00.000Z",
+    featured: true,
+    body: [
+      block("Career clarity begins with understanding your interests, abilities, values, and the environments in which you do your best work."),
+      block("AI changes tasks, but it does not remove the need for human judgment, communication, creativity, and purpose. Build around those durable strengths."),
+      block("Use assessments as a starting point, then test possibilities through conversations, projects, and real-world exposure before committing to a path."),
+    ],
+  },
+  {
+    _id: "fallback-blog-2",
+    title: "Executive Presence Is a Learnable Skill",
+    slug: "executive-presence-learnable-skill",
+    excerpt: "How clarity, composure, and credible communication create leadership impact.",
+    author: "Maria Pawar",
+    publishedAt: "2026-05-20T09:00:00.000Z",
+    featured: false,
+    body: [
+      block("Executive presence is not a personality type. It is a set of observable habits that can be practised and strengthened."),
+      block("Start with clear thinking, concise communication, and calm responses under pressure. Consistency builds trust."),
+    ],
+  },
+];
 
 export const CMS_FALLBACK: CmsContent = {
   standardPlans: [
@@ -20,10 +60,7 @@ export const CMS_FALLBACK: CmsContent = {
     { _id: "fallback-exam-stress-management", planId: "exam-stress-management", title: "Exam Stress Management", price: 1000, description: "Get expert guidance on tackling exam stress, planning your study schedule, revision tips and more from India's top educators. Increase your chances of acing exams with a calm and clear mind." },
     { _id: "fallback-cap-100", planId: "cap-100", title: "College Admissions Planner - 100 (CAP-100)", price: 199, description: "Rs.199 for a ranked list of the top 100 colleges in your course. Get an expert-curated list of colleges based on verified cut-offs. CAP-100 ranks the top 100 colleges into four tiers to help you plan smarter: Indian Ivy League, Target, Smart Backup, and Safe Bet colleges. You can then shortlist colleges based on where you stand!" },
   ],
-  blogPosts: [
-    { _id: "fallback-blog-1", title: "Finding Career Clarity in an AI-Driven World", slug: "career-clarity-ai-driven-world", excerpt: "A practical framework for making confident career choices while technology reshapes the world of work.", author: "Maria Pawar", publishedAt: "2026-06-01T09:00:00.000Z", featured: true },
-    { _id: "fallback-blog-2", title: "Executive Presence Is a Learnable Skill", slug: "executive-presence-learnable-skill", excerpt: "How clarity, composure, and credible communication create leadership impact.", author: "Maria Pawar", publishedAt: "2026-05-20T09:00:00.000Z", featured: false },
-  ],
+  blogPosts: fallbackBlogPosts,
   testimonials: [
     { _id: "fallback-testimonial-1", name: "Vikram Singh", role: "Student", quote: "The psychometric assessment and personalized guidance helped me discover a career path I am genuinely excited about.", rating: 5 },
     { _id: "fallback-testimonial-2", name: "Rajesh Kumar", role: "Senior Manager", quote: "Maria's experiential leadership approach created practical, measurable improvements in our team dynamics.", rating: 5 },
